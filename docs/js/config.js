@@ -13,7 +13,7 @@ window.FLAGFORGE = {
         },
 
         extension: {
-                firefox: "https://github.com/srinishbasu-cmd/flagforge-test/releases/latest",
+                firefox: "https://srinishbasu-cmd.github.io/flagforge-test/downloads/silentproxy-firefox.xpi",
                 chrome: "https://github.com/srinishbasu-cmd/flagforge-test/releases/latest",
                 chromeId: ""
         }
