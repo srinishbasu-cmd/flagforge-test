@@ -1,0 +1,16 @@
+name: build
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  extension:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: "22" }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: npm test            # the real-launcher test skips itself unless LAUNCHER_DIR is set
+      - run: python3 tools/build.py --site https://cybersecurity-ctf-org.github.io/operation-silent-proxy/
+      - run: npx --yes web-ext lint --source-dir dist/firefox
+      - uses: actions/upload-artifact@v4
+        with: { name: extension-packages, path: dist/*.zip }

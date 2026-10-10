@@ -1,0 +1,112 @@
+{
+	"tracks": [
+		{ "slug": "jr-pentest", "title": "Jr Penetration Testing CTF", "page": "jr-pentest.html" }
+	],
+	"challenges": [
+		{
+			"slug": "burp-suite",
+			"track": "jr-pentest",
+			"title": "Burp Suite-CTF",
+			"codename": "Operation Silent Proxy",
+			"tool": "Burp Suite Community Edition",
+			"difficulty": "Hard",
+			"status": "live",
+			"tagline": "Act as an external red teamer investigating the fintech company MegaCorp. Every flag needs Burp Suite Community Edition and nothing else.",
+			"description": [
+				"A whistleblower has hidden flags across MegaCorp's infrastructure and you have been hired to recover them. The one rule: if a flag can be reached without touching a specific Burp Community feature, the challenge has failed its purpose.",
+				"The CTF is split into six self-contained missions of roughly three to five hours each, because Burp Community cannot save projects. Every mission's flags are locked in as you go, so a crash only costs the mission you were in. By the final flag you will have used every tool in Burp Suite Community at least once."
+			],
+			"facts": [
+				{ "label": "Missions", "value": "6" },
+				{ "label": "Flags", "value": "≈ 30" },
+				{ "label": "Time", "value": "24–30 h" }
+			],
+			"learn": [
+				"Proxy: interception, history filters, match and replace, WebSockets",
+				"Repeater and Inspector: chaining requests, race conditions, request smuggling",
+				"Intruder: throttle-aware attacks with small, smart wordlists",
+				"Sequencer, Decoder and Comparer: session analysis and multi-layer decoding",
+				"Logger, Organizer, DOM Invader, Clickbandit and BApp extensions"
+			],
+			"requirements": [
+				"Burp Suite Community Edition (pre-installed on Kali Linux)",
+				"Docker with Compose v2.17 or newer",
+				"Roughly 4 GB of free RAM and a few GB of disk for lab images",
+				"Firefox, Chrome, Edge or Brave for the launcher extension"
+			],
+			"readme": "challenges/burp-suite/README.md",
+			"repo": "https://github.com/Cybersecurity-CTF-Org/operation-silent-proxy",
+			"labs": [
+				{ "id": "mission-1-recon", "title": "Mission 1: Setup & Recon", "summary": "Configure Burp against MegaCorp's fussy environments: CA certificates, listeners, client certs, SOCKS upstream, NTLM, HTTP/2.", "flags": 8, "time": "3–5 h" },
+				{ "id": "mission-2-interception", "title": "Mission 2: Interception & History", "summary": "Manipulate live traffic and dig through proxy history: role tampering, WebSockets, match and replace rules.", "flags": 6, "time": "3–5 h" },
+				{ "id": "mission-3-repeater", "title": "Mission 3: Repeater & Inspector", "summary": "Surgical exploitation of the API and payment services: chained calls, race conditions, request smuggling.", "flags": 6, "time": "3–5 h" },
+				{ "id": "mission-4-intruder", "title": "Mission 4: Intruder Mastery", "summary": "Brute-force work sized for Community's throttled Intruder: PINs, pitchfork attacks, token chains.", "flags": 5, "time": "3–5 h" },
+				{ "id": "mission-5-sessions", "title": "Mission 5: Sequencer, Decoder, Comparer & Sessions", "summary": "Cryptographic and session-layer analysis of MegaCorp's token handling, macros and cookie jar.", "flags": 5, "time": "3–5 h" },
+				{ "id": "mission-6-finale", "title": "Mission 6: Client-Side, Extensions & Finale", "summary": "DOM XSS, clickjacking, Logger-only flags, JWT forging, then decrypt the CEO's secret.", "flags": 6, "time": "3–5 h" }
+			],
+			"contributors": [
+				{ "name": "Srinish Basu", "role": "Cyber Lead, Elev8Labs", "github": "", "photo": "" }
+			]
+		},
+		{
+			"slug": "nmap",
+			"track": "jr-pentest",
+			"title": "Nmap-CTF",
+			"tool": "Nmap",
+			"difficulty": "Hard",
+			"status": "coming-soon",
+			"tagline": "Hands-on challenges for Nmap, one of the tools the Final CTF requires.",
+			"description": [
+				"This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF, which needs every tool from this track.",
+				"It is still being built. Contributors are welcome."
+			],
+			"facts": [],
+			"learn": [],
+			"requirements": [],
+			"readme": "challenges/nmap/README.md",
+			"repo": "https://github.com/Cybersecurity-CTF-Org",
+			"labs": [],
+			"contributors": []
+		},
+		{
+			"slug": "hydra",
+			"track": "jr-pentest",
+			"title": "Hydra-CTF",
+			"tool": "Hydra",
+			"difficulty": "Hard",
+			"status": "coming-soon",
+			"tagline": "Hands-on challenges for Hydra, one of the tools the Final CTF requires.",
+			"description": [
+				"This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF, which needs every tool from this track.",
+				"It is still being built. Contributors are welcome."
+			],
+			"facts": [],
+			"learn": [],
+			"requirements": [],
+			"readme": "challenges/hydra/README.md",
+			"repo": "https://github.com/Cybersecurity-CTF-Org",
+			"labs": [],
+			"contributors": []
+		},
+		{
+			"slug": "final",
+			"track": "jr-pentest",
+			"title": "Jr Penetration Testing CTF",
+			"tool": "Burp Suite, Nmap, Hydra and more",
+			"difficulty": "Hard",
+			"status": "coming-soon",
+			"tagline": "The final challenge. It needs every tool you practised in the tool-specific CTFs. Best of luck.",
+			"description": [
+				"Complete the tool-specific CTFs first: this final CTF combines all of them and you choose which tool to use at each step.",
+				"It is still being built."
+			],
+			"facts": [],
+			"learn": [],
+			"requirements": [],
+			"readme": "challenges/final/README.md",
+			"repo": "https://github.com/Cybersecurity-CTF-Org",
+			"labs": [],
+			"contributors": []
+		}
+	]
+}

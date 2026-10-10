@@ -1,0 +1,302 @@
+/* ==========================================================
+   Flag Forge — Design tokens
+   ========================================================== */
+:root {
+	--bg: #07090d;
+	--surface: #0f141b;
+	--surface-hover: #141b24;
+	--border: #1f2935;
+	--text: #e6edf3;
+	--text-muted: #8b98a8;
+	--accent: #2ee59d;
+	--accent-soft: rgba(46, 229, 157, 0.12);
+	--danger: #ff5c6c;
+	--danger-soft: rgba(255, 92, 108, 0.12);
+
+	--font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
+
+	--radius: 16px;
+	--gap: clamp(16px, 2.5vw, 24px);
+	--transition: 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
+
+	color-scheme: dark;
+}
+
+/* ==========================================================
+   Base
+   ========================================================== */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+html {
+	-webkit-text-size-adjust: 100%;
+	text-size-adjust: 100%;
+}
+
+body {
+	margin: 0;
+	min-height: 100vh;
+	padding: clamp(32px, 6vw, 80px) clamp(16px, 4vw, 32px);
+	font-family: var(--font-sans);
+	font-size: 1rem;
+	line-height: 1.6;
+	color: var(--text);
+	background:
+		radial-gradient(ellipse 80% 50% at 50% -10%, rgba(46, 229, 157, 0.10), transparent 70%),
+		linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 40px 40px,
+		linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 40px 40px,
+		var(--bg);
+	background-attachment: fixed;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+	width: 100%;
+	max-width: 1120px;
+	margin-inline: auto;
+}
+
+/* ==========================================================
+   Typography
+   ========================================================== */
+h1 {
+	margin: 0 0 12px;
+	text-align: center;
+	font-family: var(--font-mono);
+	font-size: clamp(2.25rem, 6vw, 3.5rem);
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	text-wrap: balance;
+}
+
+h1::before {
+	content: "> ";
+	color: var(--accent);
+}
+
+h2 {
+	margin: clamp(48px, 8vw, 72px) 0 8px;
+	font-size: clamp(1.375rem, 3vw, 1.75rem);
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+h2::before {
+	content: "";
+	width: 4px;
+	height: 1.1em;
+	border-radius: 2px;
+	background: var(--accent);
+	flex-shrink: 0;
+}
+
+h3 {
+	margin: 0;
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+p {
+	margin: 0 auto;
+	max-width: 65ch;
+	text-align: center;
+	color: var(--text-muted);
+	text-wrap: pretty;
+}
+
+/* Intro text under the main title */
+h1 + p {
+	margin-bottom: clamp(40px, 6vw, 56px);
+	font-size: clamp(1rem, 2vw, 1.125rem);
+}
+
+/* Section descriptions under h2 */
+h2 + p {
+	margin: 0 0 24px;
+	max-width: none;
+	text-align: left;
+}
+
+/* ==========================================================
+   Grids
+   ========================================================== */
+.ctf-challenges,
+.tool-specific-ctfs {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+	gap: var(--gap);
+}
+
+.final-ctf {
+	display: grid;
+	gap: var(--gap);
+}
+
+/* ==========================================================
+   Cards — the whole card is the click target
+   ========================================================== */
+.ctf-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 20px;
+	min-height: 140px;
+	padding: 24px;
+	background: var(--surface);
+	color: var(--text);
+	border: 1px solid var(--border);
+	border-radius: var(--radius);
+	transition:
+		transform var(--transition),
+		border-color var(--transition),
+		background-color var(--transition),
+		box-shadow var(--transition);
+}
+
+/* Arrow indicator in the top-right corner */
+.ctf-card::after {
+	content: "\2192";
+	position: absolute;
+	top: 22px;
+	right: 24px;
+	font-size: 1.25rem;
+	line-height: 1;
+	color: var(--text-muted);
+	transition: transform var(--transition), color var(--transition);
+	pointer-events: none;
+}
+
+.ctf-card h2,
+.ctf-card h3 {
+	margin: 0;
+	padding-right: 32px;
+	font-size: 1.125rem;
+	font-weight: 600;
+	line-height: 1.35;
+}
+
+.ctf-card h2::before {
+	display: none;
+}
+
+.ctf-card a {
+	color: inherit;
+	text-decoration: none;
+}
+
+/* Stretched link: makes the entire card clickable */
+.ctf-card a::before {
+	content: "";
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	z-index: 1;
+}
+
+/* Difficulty label rendered as a badge */
+.ctf-card p {
+	align-self: flex-start;
+	margin: 0;
+	padding: 4px 12px;
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: 600;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: var(--danger);
+	background: var(--danger-soft);
+	border: 1px solid rgba(255, 92, 108, 0.3);
+	border-radius: 999px;
+}
+
+/* Hover & keyboard focus */
+.ctf-card:hover,
+.ctf-card:focus-within {
+	transform: translateY(-4px);
+	background: var(--surface-hover);
+	border-color: var(--accent);
+	box-shadow:
+		0 0 0 1px var(--accent-soft),
+		0 12px 32px -12px rgba(46, 229, 157, 0.35);
+}
+
+.ctf-card:hover::after,
+.ctf-card:focus-within::after {
+	color: var(--accent);
+	transform: translateX(4px);
+}
+
+.ctf-card:hover a,
+.ctf-card:focus-within a {
+	color: var(--accent);
+}
+
+.ctf-card a:focus-visible {
+	outline: none;
+}
+
+.ctf-card:has(a:focus-visible) {
+	outline: 2px solid var(--accent);
+	outline-offset: 4px;
+}
+
+.ctf-card:active {
+	transform: translateY(-1px);
+}
+
+/* Featured treatment for the Final CTF */
+.final-ctf .ctf-card {
+	min-height: 160px;
+	padding: clamp(24px, 4vw, 36px);
+	background:
+		linear-gradient(135deg, var(--accent-soft), transparent 60%),
+		var(--surface);
+	border-color: rgba(46, 229, 157, 0.35);
+}
+
+.final-ctf .ctf-card h3 {
+	font-size: clamp(1.25rem, 3vw, 1.5rem);
+}
+
+/* ==========================================================
+   Responsive
+   ========================================================== */
+@media (max-width: 480px) {
+	.ctf-card {
+		min-height: 120px;
+		padding: 20px;
+	}
+
+	.ctf-card::after {
+		top: 18px;
+		right: 20px;
+	}
+}
+
+/* ==========================================================
+   Accessibility
+   ========================================================== */
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		transition: none !important;
+	}
+
+	.ctf-card:hover,
+	.ctf-card:focus-within,
+	.ctf-card:active {
+		transform: none;
+	}
+}

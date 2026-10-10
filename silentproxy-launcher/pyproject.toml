@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "silentproxy-launcher"
+version = "0.1.0"
+description = "Native-messaging companion app that downloads and runs Operation Silent Proxy labs with Docker"
+requires-python = ">=3.9"
+dependencies = []
+
+[project.scripts]
+silentproxy = "silentproxy.cli:main"
+
+[tool.setuptools]
+packages = ["silentproxy"]

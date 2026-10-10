@@ -1,0 +1,10 @@
+{
+  "name": "silentproxy-extension",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Browser extension for the Operation Silent Proxy launcher",
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "build": "python3 tools/build.py"
+  }
+}

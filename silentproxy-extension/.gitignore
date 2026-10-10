@@ -1,0 +1,3 @@
+dist/
+keys/chrome-key.pem
+node_modules/

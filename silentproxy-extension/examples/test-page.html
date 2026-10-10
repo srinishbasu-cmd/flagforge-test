@@ -1,0 +1,27 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Silent Proxy extension test page</title>
+<style>body{font:14px system-ui;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#f1f5f9;padding:.75rem;border-radius:6px;white-space:pre-wrap}button{margin:.2rem}</style>
+<h1>Silent Proxy extension test page</h1>
+<p>Serve this repo (<code>python3 -m http.server 8000</code>) and open <code>http://localhost:8000/examples/test-page.html</code>
+with an extension built using <code>--dev-site http://localhost:8000/</code>.</p>
+<div id="buttons"></div>
+<pre id="log">ready</pre>
+<script src="../sdk/silentproxy-client.js"></script>
+<script>
+  const log = (x) => { document.getElementById('log').textContent += '\n' + (typeof x === 'string' ? x : JSON.stringify(x, null, 2)); };
+  const add = (label, fn) => {
+    const b = document.createElement('button'); b.textContent = label;
+    b.onclick = async () => { try { log(await fn()); } catch (e) { log(`ERROR ${e.code}: ${e.message}${e.hint ? ' - ' + e.hint : ''}`); } };
+    document.getElementById('buttons').append(b);
+  };
+  add('detect', () => SilentProxy.detect());
+  add('doctor', () => SilentProxy.doctor());
+  add('list labs', () => SilentProxy.list());
+  add('status', () => SilentProxy.status());
+  add('start first lab', async () => {
+    const { labs } = await SilentProxy.list();
+    return SilentProxy.start(labs[0].id, { onProgress: (p) => log(`[${p.stage}] ${p.message}${p.percent != null ? ' ' + p.percent + '%' : ''}`) });
+  });
+  add('stop all', () => SilentProxy.stopAll());
+</script>

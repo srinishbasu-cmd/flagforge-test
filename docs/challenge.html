@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+	<meta name="description" content="Challenge details, README and lab launcher for Flag Forge.">
+	<title>Challenge · Flag Forge</title>
+	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+	<link rel="stylesheet" href="style.css">
+	<link rel="stylesheet" href="challenge.css">
+</head>
+
+<body>
+	<div class="container challenge">
+		<main id="app">
+			<p class="muted">Loading challenge…</p>
+			<noscript><p>This page needs JavaScript to show the challenge and start its lab.</p></noscript>
+		</main>
+		<p class="footer-note">Labs run on your own machine and listen on 127.0.0.1 only. Nothing is attacked over the internet.</p>
+	</div>
+
+	<script src="js/config.js"></script>
+	<script src="js/markdown.js"></script>
+	<script src="js/controller.js"></script>
+	<script src="js/silentproxy-client.js"></script>
+	<script src="js/challenge.js"></script>
+</body>
+
+</html>

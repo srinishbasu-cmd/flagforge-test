@@ -1,0 +1,9 @@
+# Minimal lab used to test the launcher end to end. Note the 127.0.0.1 binding:
+# the launcher refuses any lab that publishes ports on other interfaces.
+services:
+  web:
+    image: nginx:alpine
+    ports:
+      - "127.0.0.1:18080:80"
+    volumes:
+      - ./site:/usr/share/nginx/html:ro
