@@ -3,11 +3,11 @@ window.FLAGFORGE = {
         siteName: "Flag Forge",
 
         launcher: {
-                releasesPage: "https://github.com/srinishbasu-cmd/flagforge-test/releases/latest",
+                releasesPage: "https://github.com/srinishbasu-cmd/flagforge-test/releases/tag/launcher-v0.1.0",
                 downloads: {
-                        linux: "https://github.com/srinishbasu-cmd/flagforge-test/releases/latest/download/silentproxy-linux",
-                        macos: "https://github.com/srinishbasu-cmd/flagforge-test/releases/latest/download/silentproxy-macos",
-                        windows: "https://github.com/srinishbasu-cmd/flagforge-test/releases/latest/download/silentproxy-windows.exe"
+                        linux: "https://github.com/srinishbasu-cmd/flagforge-test/releases/download/launcher-v0.1.0/silentproxy-linux",
+                        macos: "https://github.com/srinishbasu-cmd/flagforge-test/releases/download/launcher-v0.1.0/silentproxy-macos",
+                        windows: "https://github.com/srinishbasu-cmd/flagforge-test/releases/download/launcher-v0.1.0/silentproxy-windows.exe"
                 },
                 fileNames: { linux: "silentproxy-linux", macos: "silentproxy-macos", windows: "silentproxy-windows.exe" }
         },

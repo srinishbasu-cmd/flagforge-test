@@ -20,6 +20,38 @@ def is_native_launch(argv) -> bool:
     return first.startswith(("chrome-extension://", "moz-extension://", "--parent-window")) or first.endswith(".json")
 
 
+def _guided_install() -> int:
+    """Double-clicked .exe: register with Firefox, show what is ready, and keep the window open."""
+    from . import install
+    from .manager import LabManager
+
+    print("Operation Silent Proxy launcher\n")
+    code = 0
+    try:
+        for line in install.install(["firefox"], []):
+            print("Registered with", line)
+        print("\nSetup finished. Go back to the website and press 'Check again'.")
+    except (ValueError, OSError) as exc:
+        print("Setup failed:", exc)
+        code = 1
+    try:
+        d = LabManager().doctor()
+        if d.get("daemon_running") and d.get("compose_ok"):
+            print("Docker: ready (version %s)" % d.get("docker_version", "?"))
+        else:
+            err = d.get("error") or {}
+            print("Docker: NOT ready -", err.get("message", "unknown problem"))
+            if err.get("hint"):
+                print("        ", err["hint"])
+    except Exception as exc:  # never let the status check hide the setup result
+        print("Docker check skipped:", exc)
+    try:
+        input("\nPress Enter to close this window...")
+    except EOFError:
+        pass
+    return code
+
+
 def setup_logging(console: bool) -> None:
     root = logging.getLogger()
     root.setLevel(logging.INFO)
@@ -78,6 +110,10 @@ def main(argv=None) -> int:
         run_host(stdin, stdout)
         return 0
 
+    if argv is None and len(sys.argv) == 1 and getattr(sys, "frozen", False) and sys.stdin.isatty():
+        setup_logging(console=False)
+        return _guided_install()
+
     args = _parser().parse_args(argv)
     setup_logging(console=args.cmd not in (None, "reap"))
     if args.cmd is None:
@@ -127,6 +163,6 @@ def main(argv=None) -> int:
     except LabError as exc:
         print(json.dumps({"error": exc.to_dict()}, indent=2), file=sys.stderr)
         return 1
-    except ValueError as exc:
+    except (ValueError, OSError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1

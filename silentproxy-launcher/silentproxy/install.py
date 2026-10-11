@@ -63,7 +63,11 @@ def create_launcher(platform: Optional[str] = None) -> str:
 
         target = bin_dir / ("silentproxy.exe" if platform == "win32" else "silentproxy")
         if Path(sys.executable).resolve() != target.resolve():
-            shutil.copy2(sys.executable, target)
+            try:
+                shutil.copy2(sys.executable, target)
+            except PermissionError as exc:  # Windows: the installed copy is running (browser has the host open)
+                raise ValueError(f"Could not update {target} because it is in use. "
+                                 "Close Firefox and run install again.") from exc
         target.chmod(0o755)
         return str(target)
     src_root = str(Path(__file__).resolve().parent.parent)

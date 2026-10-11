@@ -1,0 +1,65 @@
+# Lives at the REPO ROOT (flagforge-test/.github/workflows/). The launcher is a subfolder, so every step
+# runs inside silentproxy-launcher/.
+# Publish a release by pushing a tag that starts with "launcher-v", e.g.:  git tag launcher-v0.1.0 && git push origin launcher-v0.1.0
+name: launcher-release
+on:
+  push:
+    tags: ["launcher-v*"]
+  workflow_dispatch:        # manual run from the Actions tab (builds and uploads artifacts, does not publish)
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: silentproxy-launcher
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -m unittest discover -s tests -t .
+
+  build:
+    needs: test
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # bin  = the name given to PyInstaller (it adds .exe by itself on Windows)
+          # file = the file that comes out, and the name players download
+          - { os: ubuntu-latest,  bin: silentproxy-linux,   file: silentproxy-linux }
+          - { os: macos-latest,   bin: silentproxy-macos,   file: silentproxy-macos }
+          - { os: windows-latest, bin: silentproxy-windows, file: silentproxy-windows.exe }
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: silentproxy-launcher
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python -m pip install --upgrade pip pyinstaller
+      - run: python -m PyInstaller --onefile --clean --noconfirm --name ${{ matrix.bin }} --paths . --collect-submodules silentproxy packaging/entry.py
+      - name: Smoke test (the file exists under the expected name and starts)
+        run: dist/${{ matrix.file }} --version
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.file }}
+          path: silentproxy-launcher/dist/${{ matrix.file }}
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/launcher-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - run: cd dist && sha256sum * > SHA256SUMS.txt && ls -l
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*

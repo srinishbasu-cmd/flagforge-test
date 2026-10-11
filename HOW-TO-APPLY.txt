@@ -1,0 +1,11 @@
+Unzip this INTO the repo root, i.e. C:\Users\Srinish Basu\Desktop\ctf_trial\flagforge-test  (choose "Replace the files").
+
+It adds / replaces ONLY these files (your silentproxy\config.py edits are not touched):
+  .github\workflows\launcher-release.yml          NEW  (repo root, the only place GitHub Actions looks)
+  silentproxy-launcher\silentproxy\cli.py         double-clicking the .exe now registers it with Firefox
+  silentproxy-launcher\silentproxy\install.py     friendly error if the installed copy is in use
+  silentproxy-launcher\silentproxy\manager.py     "+1 hour" really adds an hour
+  silentproxy-launcher\tests\test_windows.py      NEW
+  silentproxy-launcher\tests\test_manager.py
+
+Then delete the old, ineffective file:  silentproxy-launcher\.github\workflows\release.yml
