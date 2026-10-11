@@ -139,6 +139,12 @@
 			h("p", { class: "muted small" }, "Want to help? ", h("a", { href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "Contribute on GitHub" }), "."));
 	}
 
+	// A direct .xpi link must open in the SAME tab: in a new tab Firefox can show the "blocked" notice without an Allow button.
+	function extLink(label, url) {
+		const direct = /\.xpi(\?|#|$)/i.test(url);
+		return h("a", { class: "btn small", href: url, target: direct ? null : "_blank", rel: direct ? null : "noopener noreferrer", text: label });
+	}
+
 	function asidePanels(ch, os) {
 		const cmds = installCommands(os);
 		const osButtons = Object.keys(OS_LABEL).map((k) =>
@@ -156,9 +162,8 @@
 			h("section", { class: "panel", id: "get-extension" },
 				h("h2", { text: "Browser extension" }),
 				h("p", { class: "muted", text: "Lets this page start and stop labs. It only works on this website." }),
-				h("div", { class: "row" },
-					h("a", { class: "btn small", href: CFG.extension.firefox, target: "_blank", rel: "noopener noreferrer", text: "Firefox" }),
-					h("a", { class: "btn small", href: CFG.extension.chrome, target: "_blank", rel: "noopener noreferrer", text: "Chrome / Edge / Brave" }))),
+				h("div", { class: "row" }, extLink("Firefox", CFG.extension.firefox), extLink("Chrome / Edge / Brave", CFG.extension.chrome)),
+				h("p", { class: "small muted", text: "Firefox may show \u201cprevented this site from asking you to install software\u201d. Click Allow, then Add." })),
 		];
 	}
 

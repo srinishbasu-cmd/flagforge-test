@@ -189,3 +189,14 @@ test('missing README is handled', async () => {
 	await page.init();
 	await until(() => /could not be loaded/.test(app(doc).textContent));
 });
+
+test('a direct .xpi link opens in the same tab; store pages open in a new tab', async () => {
+	const config = { ...CONFIG, extension: { ...CONFIG.extension, firefox: 'https://me.github.io/flag-forge-site/downloads/ext.xpi', chrome: 'https://chromewebstore.google.com/detail/x' } };
+	const { doc, page } = setup({ config });
+	await page.init();
+	const ff = app(doc).byTag('a').find((a) => a.textContent === 'Firefox');
+	const ch = app(doc).byTag('a').find((a) => a.textContent === 'Chrome / Edge / Brave');
+	assert.equal(ff.attrs.target, undefined);
+	assert.equal(ch.attrs.target, '_blank');
+	assert.match(app(doc).textContent, /Click Allow, then Add/);
+});

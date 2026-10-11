@@ -157,7 +157,11 @@ class ManagerTests(unittest.TestCase):
         m = self.make(ttl=1)
         m.start("demo-lab")
         res = m.extend("demo-lab", 2)
-        self.assertGreater(res["expires_in"], 3600 + 3000)
+        self.assertGreater(res["expires_in"], 3 * 3600 - 60)   # 1h left + 2h added
+        self.assertLessEqual(res["expires_in"], 3 * 3600)
+        res = m.extend("demo-lab", 12)                          # capped at 12h from now, not 15h
+        self.assertLessEqual(res["expires_in"], 12 * 3600)
+        self.assertGreater(res["expires_in"], 12 * 3600 - 60)
         with self.assertRaises(LabError):
             m.extend("demo-lab", 99)
         with self.assertRaises(LabError):

@@ -284,8 +284,8 @@ class LabManager:
             entry = d["labs"].get(lab_id)
             if not entry:
                 raise LabError("NOT_RUNNING", "That lab is not running.")
-            entry["expires_at"] = min(max(entry["expires_at"], time.time() + hours * 3600),
-                                      time.time() + MAX_TTL_HOURS * 3600)
+            # add the hours to the time that is left, but never allow more than MAX_TTL_HOURS from now
+            entry["expires_at"] = min(entry["expires_at"] + hours * 3600, time.time() + MAX_TTL_HOURS * 3600)
             holder["entry"] = dict(entry)
 
         state.update(mutate)
