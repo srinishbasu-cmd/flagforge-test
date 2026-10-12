@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "labs": [
+    {
+      "id": "demo-lab",
+      "title": "Demo Lab",
+      "summary": "A minimal nginx lab to verify the launcher works end to end.",
+      "version": "1.0.0",
+      "url": "https://github.com/srinishbasu-cmd/flagforge-test/releases/download/demo-lab-v1.0.0/demo-lab-1.0.0.zip",
+      "sha256": "b0b498344a2dbcc8a89286326234aa013b3e58c38fce01f2980c072e17428232",
+      "size": 463,
+      "compose_file": "docker-compose.yml",
+      "ttl_hours": 6,
+      "ports": [
+        {
+          "name": "Demo",
+          "host": 18080,
+          "scheme": "http"
+        }
+      ]
+    }
+  ]
+}
