@@ -22,18 +22,57 @@
     {
       "id": "mission-1-recon",
       "title": "Mission 1: Setup & Recon",
-      "summary": "Test entry pointing at the demo lab.",
+      "summary": "Configure Burp Suite Community against nine fussy MegaCorp environments: CA certs, listeners, client certs, SOCKS, NTLM, HTTP/2, hostname overrides, scope and the event log.",
       "version": "1.0.0",
-      "url": "https://github.com/srinishbasu-cmd/flagforge-test/releases/download/demo-lab-v1.0.0/demo-lab-1.0.0.zip",
-      "sha256": "b0b498344a2dbcc8a89286326234aa013b3e58c38fce01f2980c072e17428232",
-      "size": 463,
+      "url": "https://github.com/srinishbasu-cmd/flagforge-test/releases/download/mission-1-recon-v1.0.0/mission-1-recon-1.0.0.zip",
+      "sha256": "192c1bbf12fbce8369ee68bbcab4d7bf85e0c9b47a482fa1b92f577e91487b89",
+      "size": 22706,
       "compose_file": "docker-compose.yml",
-      "ttl_hours": 6,
+      "ttl_hours": 4.0,
       "ports": [
         {
-          "name": "Demo",
-          "host": 18080,
+          "name": "Portal HTTPS",
+          "host": 18081,
+          "scheme": "https"
+        },
+        {
+          "name": "Legacy client-cert",
+          "host": 18082,
+          "scheme": "https",
+          "check": false
+        },
+        {
+          "name": "Main app",
+          "host": 18083,
           "scheme": "http"
+        },
+        {
+          "name": "CLI",
+          "host": 18084,
+          "scheme": "http"
+        },
+        {
+          "name": "NTLM",
+          "host": 18085,
+          "scheme": "http",
+          "check": false
+        },
+        {
+          "name": "SOCKS gateway",
+          "host": 18086,
+          "scheme": "http"
+        },
+        {
+          "name": "HTTP2-only",
+          "host": 18087,
+          "scheme": "https",
+          "check": false
+        },
+        {
+          "name": "Expired cert",
+          "host": 18088,
+          "scheme": "https",
+          "check": false
         }
       ]
     }
