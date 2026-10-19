@@ -4,24 +4,62 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
-	<meta name="description" content="A collection of hands-on cybersecurity challenges.">
-	<title>Flag Forge</title>
+	<meta name="description" content="Flag Forge - Master offensive security tools through hands-on CTF challenges.">
+	<title>Flag Forge · Master Cybersecurity</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 </head>
 
-<body>
-	<div class="container">
-		<h1>Flag Forge</h1>
-		<p>A collection of hands-on cybersecurity challenges.</p>
-		<div class="ctf-challenges">
-			<div class="ctf-card">
-				<h2><a href="jr-pentest.html">Jr Penetration Testing CTF</a></h2>
-				<p>Difficulty: Hard</p>
+<body class="landing-page">
+
+	<!-- HTB STYLE NAVBAR -->
+	<nav class="navbar">
+		<a href="index.html" class="nav-logo">
+			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+			FLAG FORGE
+		</a>
+		<div class="nav-links">
+			<a href="#platform">Platform</a>
+			<a href="jr-pentest.html">Challenges</a>
+			<a href="#resources">Resources</a>
+			<a href="#company">Company</a>
+		</div>
+		<div class="nav-actions">
+			<a href="jr-pentest.html" class="btn-login">Sign In</a>
+			<a href="jr-pentest.html" class="btn-primary">Get Started</a>
+		</div>
+	</nav>
+
+	<!-- HTB STYLE HERO SECTION -->
+	<header class="hero-section">
+		<!-- Background image is applied via CSS -->
+		<div class="hero-overlay"></div>
+		
+		<div class="hero-content">
+			<h1 class="hero-title">Build and scale a cyber<br>workforce in the AI era</h1>
+			<p class="hero-subtitle">
+				Equip threat-ready cyber teams for an AI-accelerated landscape with hands-on labs, assessments, and pathways that build top performing teams.
+			</p>
+			<div class="hero-buttons">
+				<a href="jr-pentest.html" class="btn-primary large">For business</a>
+				<a href="jr-pentest.html" class="btn-secondary large">For individuals</a>
 			</div>
 		</div>
-	</div>
-</body>
+		
+		<!-- Decorative grid pattern on the right side -->
+		<div class="hero-decoration"></div>
+	</header>
 
+	<main class="landing-main">
+		<section id="platform" class="landing-section">
+			<h2>The Ultimate CTF Platform</h2>
+			<p>Tool-specific, Dockerized labs that run directly on your machine.</p>
+		</section>
+	</main>
+
+	<footer class="footer-note">
+		Flag Forge · Elev8Labs
+	</footer>
+
+</body>
 </html>

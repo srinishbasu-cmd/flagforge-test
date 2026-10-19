@@ -1,302 +1,244 @@
 /* ==========================================================
-   Flag Forge — Design tokens
+   GLOBAL VARIABLES & RESET
    ========================================================== */
 :root {
-	--bg: #07090d;
-	--surface: #0f141b;
-	--surface-hover: #141b24;
-	--border: #1f2935;
-	--text: #e6edf3;
-	--text-muted: #8b98a8;
-	--accent: #2ee59d;
-	--accent-soft: rgba(46, 229, 157, 0.12);
+	--bg: #0b0f12;
+	--surface: #12181e;
+	--surface-hover: #1a222a;
+	--border: rgba(255, 255, 255, 0.1);
+	--text: #ffffff;
+	--text-muted: #8b9bb4;
+	--accent: #2ee59d; /* HTB style bright green */
+	--accent-soft: rgba(46, 229, 157, 0.15);
 	--danger: #ff5c6c;
-	--danger-soft: rgba(255, 92, 108, 0.12);
-
-	--font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-	--font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", Menlo, Consolas, monospace;
-
-	--radius: 16px;
-	--gap: clamp(16px, 2.5vw, 24px);
-	--transition: 200ms cubic-bezier(0.2, 0.8, 0.2, 1);
-
-	color-scheme: dark;
+	--danger-soft: rgba(255, 92, 108, 0.15);
+	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+	--font-mono: 'Fira Code', 'Courier New', monospace;
+	--radius: 8px;
+	--gap: 24px;
+	--transition: 0.2s ease-in-out;
 }
 
-/* ==========================================================
-   Base
-   ========================================================== */
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-}
-
-html {
-	-webkit-text-size-adjust: 100%;
-	text-size-adjust: 100%;
-}
-
+* { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-	margin: 0;
-	min-height: 100vh;
-	padding: clamp(32px, 6vw, 80px) clamp(16px, 4vw, 32px);
 	font-family: var(--font-sans);
-	font-size: 1rem;
-	line-height: 1.6;
+	background-color: var(--bg);
 	color: var(--text);
-	background:
-		radial-gradient(ellipse 80% 50% at 50% -10%, rgba(46, 229, 157, 0.10), transparent 70%),
-		linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 40px 40px,
-		linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 40px 40px,
-		var(--bg);
-	background-attachment: fixed;
+	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-}
-
-.container {
-	width: 100%;
-	max-width: 1120px;
-	margin-inline: auto;
 }
 
 /* ==========================================================
-   Typography
+   NAVBAR (HTB STYLE)
    ========================================================== */
-h1 {
-	margin: 0 0 12px;
-	text-align: center;
-	font-family: var(--font-mono);
-	font-size: clamp(2.25rem, 6vw, 3.5rem);
-	font-weight: 700;
-	line-height: 1.1;
-	letter-spacing: -0.02em;
-	text-wrap: balance;
-}
-
-h1::before {
-	content: "> ";
-	color: var(--accent);
-}
-
-h2 {
-	margin: clamp(48px, 8vw, 72px) 0 8px;
-	font-size: clamp(1.375rem, 3vw, 1.75rem);
-	font-weight: 600;
-	letter-spacing: -0.01em;
+.navbar {
+	position: fixed;
+	top: 0; left: 0; right: 0;
+	height: 72px;
 	display: flex;
 	align-items: center;
-	gap: 12px;
-}
-
-h2::before {
-	content: "";
-	width: 4px;
-	height: 1.1em;
-	border-radius: 2px;
-	background: var(--accent);
-	flex-shrink: 0;
-}
-
-h3 {
-	margin: 0;
-	font-size: 1.125rem;
-	font-weight: 600;
-	line-height: 1.35;
-}
-
-p {
-	margin: 0 auto;
-	max-width: 65ch;
-	text-align: center;
-	color: var(--text-muted);
-	text-wrap: pretty;
-}
-
-/* Intro text under the main title */
-h1 + p {
-	margin-bottom: clamp(40px, 6vw, 56px);
-	font-size: clamp(1rem, 2vw, 1.125rem);
-}
-
-/* Section descriptions under h2 */
-h2 + p {
-	margin: 0 0 24px;
-	max-width: none;
-	text-align: left;
-}
-
-/* ==========================================================
-   Grids
-   ========================================================== */
-.ctf-challenges,
-.tool-specific-ctfs {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
-	gap: var(--gap);
-}
-
-.final-ctf {
-	display: grid;
-	gap: var(--gap);
-}
-
-/* ==========================================================
-   Cards — the whole card is the click target
-   ========================================================== */
-.ctf-card {
-	position: relative;
-	display: flex;
-	flex-direction: column;
 	justify-content: space-between;
-	gap: 20px;
-	min-height: 140px;
-	padding: 24px;
-	background: var(--surface);
-	color: var(--text);
-	border: 1px solid var(--border);
-	border-radius: var(--radius);
-	transition:
-		transform var(--transition),
-		border-color var(--transition),
-		background-color var(--transition),
-		box-shadow var(--transition);
+	padding: 0 40px;
+	background: rgba(11, 15, 18, 0.85);
+	backdrop-filter: blur(12px);
+	border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+	z-index: 1000;
 }
 
-/* Arrow indicator in the top-right corner */
-.ctf-card::after {
-	content: "\2192";
-	position: absolute;
-	top: 22px;
-	right: 24px;
+.nav-logo {
+	display: flex;
+	align-items: center;
+	gap: 10px;
 	font-size: 1.25rem;
-	line-height: 1;
-	color: var(--text-muted);
-	transition: transform var(--transition), color var(--transition);
-	pointer-events: none;
-}
-
-.ctf-card h2,
-.ctf-card h3 {
-	margin: 0;
-	padding-right: 32px;
-	font-size: 1.125rem;
-	font-weight: 600;
-	line-height: 1.35;
-}
-
-.ctf-card h2::before {
-	display: none;
-}
-
-.ctf-card a {
-	color: inherit;
+	font-weight: 800;
+	letter-spacing: 0.05em;
+	color: var(--text);
 	text-decoration: none;
 }
 
-/* Stretched link: makes the entire card clickable */
-.ctf-card a::before {
-	content: "";
+.nav-links {
+	display: flex;
+	gap: 32px;
+}
+
+.nav-links a {
+	color: var(--text-muted);
+	text-decoration: none;
+	font-size: 0.95rem;
+	font-weight: 500;
+	transition: color var(--transition);
+}
+
+.nav-links a:hover {
+	color: var(--text);
+}
+
+.nav-actions {
+	display: flex;
+	align-items: center;
+	gap: 16px;
+}
+
+.btn-login {
+	color: var(--text);
+	text-decoration: none;
+	font-weight: 600;
+	font-size: 0.95rem;
+}
+
+.btn-login:hover {
+	color: var(--accent);
+}
+
+/* ==========================================================
+   BUTTONS (HTB STYLE)
+   ========================================================== */
+.btn-primary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: var(--accent);
+	color: #000;
+	font-weight: 700;
+	padding: 10px 20px;
+	border-radius: 4px;
+	text-decoration: none;
+	border: 1px solid var(--accent);
+	transition: all var(--transition);
+}
+
+.btn-primary:hover {
+	background: #5af0b4;
+	border-color: #5af0b4;
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(46, 229, 157, 0.3);
+}
+
+.btn-secondary {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background: transparent;
+	color: var(--text);
+	font-weight: 700;
+	padding: 10px 20px;
+	border-radius: 4px;
+	text-decoration: none;
+	border: 1px solid rgba(255, 255, 255, 0.2);
+	transition: all var(--transition);
+}
+
+.btn-secondary:hover {
+	background: rgba(255, 255, 255, 0.05);
+	border-color: var(--text);
+}
+
+.btn-primary.large, .btn-secondary.large {
+	padding: 16px 32px;
+	font-size: 1.1rem;
+	border-radius: 6px;
+}
+
+/* ==========================================================
+   HERO SECTION (HTB STYLE)
+   ========================================================== */
+.hero-section {
+	position: relative;
+	min-height: 90vh;
+	display: flex;
+	align-items: center;
+	padding: 0 10%;
+	overflow: hidden;
+	
+	/* The Background Image */
+	background-image: url('https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop');
+	background-size: cover;
+	background-position: center;
+}
+
+/* Dark Green/Black Gradient Overlay */
+.hero-overlay {
 	position: absolute;
 	inset: 0;
-	border-radius: inherit;
+	background: linear-gradient(90deg, #0b0f12 0%, rgba(11, 15, 18, 0.9) 45%, rgba(11, 15, 18, 0.4) 100%);
 	z-index: 1;
 }
 
-/* Difficulty label rendered as a badge */
-.ctf-card p {
-	align-self: flex-start;
-	margin: 0;
-	padding: 4px 12px;
-	font-family: var(--font-mono);
-	font-size: 0.75rem;
-	font-weight: 600;
-	letter-spacing: 0.06em;
-	text-transform: uppercase;
-	color: var(--danger);
-	background: var(--danger-soft);
-	border: 1px solid rgba(255, 92, 108, 0.3);
-	border-radius: 999px;
+.hero-content {
+	position: relative;
+	z-index: 2;
+	max-width: 800px;
+	margin-top: 72px; /* offset for navbar */
 }
 
-/* Hover & keyboard focus */
-.ctf-card:hover,
-.ctf-card:focus-within {
-	transform: translateY(-4px);
-	background: var(--surface-hover);
-	border-color: var(--accent);
-	box-shadow:
-		0 0 0 1px var(--accent-soft),
-		0 12px 32px -12px rgba(46, 229, 157, 0.35);
+.hero-title {
+	font-size: clamp(3rem, 5vw, 4.5rem);
+	font-weight: 800;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+	margin-bottom: 24px;
 }
 
-.ctf-card:hover::after,
-.ctf-card:focus-within::after {
-	color: var(--accent);
-	transform: translateX(4px);
+.hero-subtitle {
+	font-size: clamp(1.1rem, 1.5vw, 1.3rem);
+	color: #b8c5d6;
+	max-width: 650px;
+	margin-bottom: 40px;
+	line-height: 1.6;
 }
 
-.ctf-card:hover a,
-.ctf-card:focus-within a {
-	color: var(--accent);
+.hero-buttons {
+	display: flex;
+	gap: 16px;
+	flex-wrap: wrap;
 }
 
-.ctf-card a:focus-visible {
-	outline: none;
-}
-
-.ctf-card:has(a:focus-visible) {
-	outline: 2px solid var(--accent);
-	outline-offset: 4px;
-}
-
-.ctf-card:active {
-	transform: translateY(-1px);
-}
-
-/* Featured treatment for the Final CTF */
-.final-ctf .ctf-card {
-	min-height: 160px;
-	padding: clamp(24px, 4vw, 36px);
-	background:
-		linear-gradient(135deg, var(--accent-soft), transparent 60%),
-		var(--surface);
-	border-color: rgba(46, 229, 157, 0.35);
-}
-
-.final-ctf .ctf-card h3 {
-	font-size: clamp(1.25rem, 3vw, 1.5rem);
+/* Decorative Grid Pattern */
+.hero-decoration {
+	position: absolute;
+	top: 0; right: 0; bottom: 0;
+	width: 50%;
+	background-image: radial-gradient(circle, rgba(46, 229, 157, 0.15) 1px, transparent 1px);
+	background-size: 24px 24px;
+	z-index: 1;
+	mask-image: linear-gradient(to left, black, transparent);
+	-webkit-mask-image: linear-gradient(to left, black, transparent);
 }
 
 /* ==========================================================
-   Responsive
+   LANDING PAGE LAYOUT
    ========================================================== */
-@media (max-width: 480px) {
-	.ctf-card {
-		min-height: 120px;
-		padding: 20px;
-	}
+.landing-main {
+	padding: 80px 10%;
+}
 
-	.ctf-card::after {
-		top: 18px;
-		right: 20px;
-	}
+.landing-section h2 {
+	font-size: 2rem;
+	margin-bottom: 16px;
+}
+
+.landing-section p {
+	color: var(--text-muted);
+	font-size: 1.1rem;
+}
+
+.footer-note {
+	text-align: center;
+	padding: 40px;
+	color: var(--text-muted);
+	border-top: 1px solid var(--border);
+	font-size: 0.9rem;
 }
 
 /* ==========================================================
-   Accessibility
+   MOBILE RESPONSIVENESS
    ========================================================== */
-@media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		transition: none !important;
-	}
-
-	.ctf-card:hover,
-	.ctf-card:focus-within,
-	.ctf-card:active {
-		transform: none;
-	}
+@media (max-width: 900px) {
+	.navbar { padding: 0 20px; }
+	.nav-links { display: none; } /* Hide links on mobile */
+	.hero-section { padding: 0 5%; min-height: 80vh; }
+	.hero-overlay { background: linear-gradient(180deg, #0b0f12 0%, rgba(11, 15, 18, 0.8) 100%); }
+	.hero-title { font-size: 2.5rem; }
+	.hero-buttons { flex-direction: column; width: 100%; }
+	.btn-primary.large, .btn-secondary.large { width: 100%; }
 }
