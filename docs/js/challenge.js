@@ -354,7 +354,7 @@
 	function launchBody(ch, ctl, os) {
 		const st = ctl.state;
 		const out = [setupList(ctl, os),
-			h("div", { class: "row" }, h("button", { type: "button", class: "btn small", text: "Check again", onclick: () => ctl.checkSetup() }))];
+			h("div", { class: "row" }, h("button", { type: "button", class: "btn-secondary small", text: "Check again", onclick: () => ctl.checkSetup() }))];
 		if (st.notice) out.push(errorBox(st.notice));
 		if (st.conflict) {
 			const lab = ch.labs.find((l) => l.id === st.conflict.labId);
@@ -402,7 +402,7 @@
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
-			aboutPanel(ch), readmePanel(ch), contributorsPanel(ch));
+			aboutPanel(ch), readmePanel(ch);
 			
 		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, os) : null);
 		const page = h("div", {}, crumbs(ch, track), hero(ch, os), h("div", { class: "layout" }, main, aside));
