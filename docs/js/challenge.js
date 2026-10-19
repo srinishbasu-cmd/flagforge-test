@@ -82,93 +82,17 @@
 				h("a", { class: "btn", href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "GitHub" })) : null);
 	}
 
-	// ---------- flag submission ----------
-	function flagPanel(ch) {
-		if (!ch.flags || !ch.flags.length) return null;
-		
-		// Load progress from localStorage
-		const storageKey = "ff_flags_" + ch.slug;
-		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
-
-		const input = h("input", { type: "text", placeholder: "FLAG{...}", class: "flag-input" });
-		const msg = h("div", { class: "flag-msg" });
-		const progressText = h("span", { class: "hint", text: `${found.size} / ${ch.flags.length} flags found` });
-
-		const submit = h("button", { type: "button", class: "btn primary", text: "Submit Flag" });
-		
-		submit.addEventListener("click", () => {
-			const val = input.value.trim();
-			if (!val) return;
-			
-			if (found.has(val)) {
-				msg.textContent = "You already submitted this flag.";
-				msg.className = "flag-msg info";
-				return;
-			}
-
-			if (ch.flags.includes(val)) {
-				found.add(val);
-				localStorage.setItem(storageKey, JSON.stringify([...found]));
-				progressText.textContent = `${found.size} / ${ch.flags.length} flags found`;
-				msg.textContent = "✅ Correct! Flag accepted.";
-				msg.className = "flag-msg success";
-				input.value = "";
-				if (found.size === ch.flags.length) {
-					msg.textContent = "🎉 Mission Complete! All flags found.";
-				}
-			} else {
-				msg.textContent = "❌ Incorrect flag. Keep trying.";
-				msg.className = "flag-msg error";
-			}
-		});
-
-		input.addEventListener("keypress", (e) => { if (e.key === "Enter") submit.click(); });
-
-		return h("section", { class: "panel briefing", id: "submit-flag" },
-			h("div", { class: "row", style: "justify-content: space-between; align-items: flex-end;" },
-				h("h2", { text: "Submit Flag", style: "margin: 0;" }),
-				progressText
-			),
-			h("div", { class: "row", style: "margin-top: 16px;" },
-				input,
-				submit
-			),
-			msg
-		);
-	}
-
-	// ---------- briefing panel ----------
+	// ---------- global briefing (story & setup) ----------
 	function briefingPanel(ch) {
 		if (!ch.briefing) return null;
 		const b = ch.briefing;
-
-		const intro = h("div", { class: "briefing-intro" },
-			(b.intro || []).map((p) => h("p", { text: p }))
-		);
-
-		const objectives = h("ol", {},
-			(b.objectives || []).map((o) =>
-				h("li", {}, h("strong", { text: o.n + ". " + o.title }), " — " + o.task)
-			)
-		);
-
-		const setup = h("ol", {},
-			(b.setup || []).map((s) => h("li", { text: s }))
-		);
-
-		const hints = h("ul", {},
-			(b.hints || []).map((hi) =>
-				h("li", {}, h("span", { class: "hint-badge", text: hi.unlocksAfter }), " " + hi.text)
-			)
-		);
+		const intro = h("div", { class: "briefing-intro" }, (b.intro || []).map((p) => h("p", { text: p })));
+		const setup = h("ol", {}, (b.setup || []).map((s) => h("li", { text: s })));
+		const hints = h("ul", {}, (b.hints || []).map((hi) => h("li", {}, h("span", { class: "hint-badge", text: hi.unlocksAfter }), " " + hi.text)));
 
 		return h("section", { class: "panel briefing", id: "briefing" },
 			h("h2", { text: "Briefing" }),
 			intro,
-			h("details", { class: "briefing-details", open: true },
-				h("summary", { text: "Objectives — 9 flags to find" }),
-				objectives
-			),
 			h("details", { class: "briefing-details" },
 				h("summary", { text: "Setup guide" }),
 				setup
@@ -177,6 +101,73 @@
 				h("summary", { text: "Hints (unlock as you progress)" }),
 				hints
 			)
+		);
+	}
+
+	// ---------- inline flag submission (More Interactive) ----------
+	function inlineFlagPanel(lab) {
+		const storageKey = "ff_flags_" + lab.id;
+		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
+		
+		const input = h("input", { type: "text", placeholder: "FLAG{...}", class: "flag-input" });
+		const msg = h("div", { class: "flag-msg" });
+		const countText = h("span", { class: "flag-count", text: `${found.size} / ${lab.flags_list.length} Flags` });
+		const progressFill = h("div", { class: "flag-progress-fill", style: `width: ${(found.size / lab.flags_list.length) * 100}%` });
+
+		const submit = h("button", { type: "button", class: "btn primary", text: "Submit", style: "padding: 0 20px;" });
+		
+		function handleSubmit() {
+			const val = input.value.trim();
+			if (!val) return;
+
+			// Reset states
+			input.classList.remove("success-border", "error-border");
+			msg.classList.remove("show", "success", "error", "info");
+			
+			if (found.has(val)) {
+				msg.textContent = "You already submitted this flag.";
+				msg.classList.add("show", "info");
+				return;
+			}
+
+			if (lab.flags_list.includes(val)) {
+				found.add(val);
+				localStorage.setItem(storageKey, JSON.stringify([...found]));
+				
+				// Update UI
+				countText.textContent = `${found.size} / ${lab.flags_list.length} Flags`;
+				progressFill.style.width = `${(found.size / lab.flags_list.length) * 100}%`;
+				
+				msg.textContent = found.size === lab.flags_list.length ? "🎉 Mission Complete! All flags found." : "✅ Correct! Flag accepted.";
+				msg.classList.add("show", "success");
+				
+				input.classList.add("success-border");
+				input.value = "";
+				setTimeout(() => input.classList.remove("success-border"), 2000);
+
+			} else {
+				msg.textContent = "❌ Incorrect flag. Keep trying.";
+				msg.classList.add("show", "error");
+				
+				input.classList.add("error-border");
+				setTimeout(() => input.classList.remove("error-border"), 2000);
+			}
+		}
+
+		submit.addEventListener("click", handleSubmit);
+		input.addEventListener("keypress", (e) => { if (e.key === "Enter") handleSubmit(); });
+
+		return h("div", { class: "inline-flag-panel" },
+			h("div", { class: "flag-header" },
+				h("h4", { text: "Submit Flag" }),
+				countText
+			),
+			h("div", { class: "flag-progress-bar" }, progressFill),
+			h("div", { class: "flag-form" },
+				input,
+				submit
+			),
+			msg
 		);
 	}
 
@@ -300,6 +291,7 @@
 		const L = ctl.state.labs[lab.id];
 		const ready = ctl.ready();
 		let controls;
+		
 		if (L.status === "starting") {
 			const p = L.progress || {};
 			const bar = h("div", { class: "progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": p.percent != null ? p.percent : null },
@@ -309,38 +301,53 @@
 		} else if (L.status === "stopping") {
 			controls = h("div", { class: "hint", text: "Stopping…" });
 		} else if (L.status === "running") {
-			// UI FIX: Only show the main app button prominently, hide the rest in a <details> tag
 			const mainUrl = (L.urls || []).find(u => u.link) || (L.urls && L.urls[0]);
 			const otherUrls = (L.urls || []).filter(u => u !== mainUrl);
 
 			controls = h("div", { class: "mission-state" },
-				h("div", { class: "row" },
+				h("div", { class: "row", style: "justify-content: flex-end; margin-top: 0;" },
 					mainUrl && mainUrl.link ? h("a", { class: "btn small primary", href: mainUrl.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + mainUrl.name }) : null,
 					h("span", { class: "hint", "data-expires": L.expiresAt, text: fmtLeft(L.expiresAt - Date.now()) })),
-				L.ready === false ? h("div", { class: "hint", text: "Some services are still warming up. Give it a minute." }) : null,
 				
-				// Dev links hidden by default
 				otherUrls.length > 0 ? h("details", { class: "dev-links" },
 					h("summary", { class: "hint", text: "Show all lab services (Dev Mode)" }),
-					h("div", { class: "row" },
+					h("div", { class: "row", style: "justify-content: flex-end; margin: 4px 0 0;" },
 						otherUrls.map(u => u.link ? h("a", { class: "btn small", href: u.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + u.name }) : null)
 					)
 				) : null,
 
-				h("div", { class: "row" },
+				h("div", { class: "row", style: "justify-content: flex-end; margin-top: 8px;" },
 					h("button", { type: "button", class: "btn small", text: "+1 hour", onclick: () => ctl.extend(lab.id, 1) }),
 					h("button", { type: "button", class: "btn small danger", text: "Stop lab", onclick: () => ctl.stop(lab.id) })));
 		} else {
 			controls = h("button", { type: "button", class: "btn primary", text: "▶ Start lab", disabled: !ready, onclick: () => ctl.start(lab.id) });
 		}
+
 		const chip = L.status === "running" ? h("span", { class: "badge accent", text: "Running" }) : null;
+		
+		// Build extra sections that only show when running
+		const extraSections = [];
+		if (L.status === "running" && lab.objectives) {
+			extraSections.push(
+				h("div", { class: "mission-objectives" },
+					h("h4", { text: "Objectives" }),
+					h("ol", {}, lab.objectives.map(o => h("li", {}, h("strong", { text: o.n + ". " + o.title }), " — " + o.task)))
+				)
+			);
+		}
+		if (L.status === "running" && lab.flags_list) {
+			extraSections.push(inlineFlagPanel(lab));
+		}
+
 		return h("li", { class: "mission" + (L.status === "running" ? " running" : "") },
 			h("div", { class: "num", text: String(index + 1).padStart(2, "0") }),
 			h("div", { class: "mission-main" },
 				h("div", { class: "mission-title" }, lab.title, " ", chip),
 				h("div", { class: "muted small", text: lab.summary }),
 				h("div", { class: "muted small", text: [lab.flags ? lab.flags + " flags" : "", lab.time].filter(Boolean).join(" · ") }),
-				errorBox(L.error)),
+				errorBox(L.error),
+				extraSections // <-- Inject objectives and flag box here
+			),
 			controls);
 	}
 
@@ -392,10 +399,8 @@
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
-		// Briefing and Flag submission are injected before the Launch Panel
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
-			flagPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
 			aboutPanel(ch), readmePanel(ch), contributorsPanel(ch));
 			
@@ -431,11 +436,9 @@
 
 		if (ctl) {
 			ctl.checkSetup();
-			// countdown text
 			if (env.setInterval) env.setInterval(() => {
 				for (const el of doc.querySelectorAll("[data-expires]")) el.textContent = fmtLeft(Number(el.getAttribute("data-expires")) - Date.now());
 			}, 1000);
-			// returning from installing something: re-check automatically
 			let last = 0;
 			const recheck = () => {
 				if (ctl.ready() || Date.now() - last < 2000) return;

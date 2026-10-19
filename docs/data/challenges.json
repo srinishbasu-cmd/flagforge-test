@@ -14,7 +14,7 @@
 			"tagline": "Act as an external red teamer investigating the fintech company MegaCorp. Every flag needs Burp Suite Community Edition and nothing else.",
 			"description": [
 				"A whistleblower has hidden flags across MegaCorp's infrastructure and you have been hired to recover them. The one rule: if a flag can be reached without touching a specific Burp Community feature, the challenge has failed its purpose.",
-				"The CTF is split into six self-contained missions of roughly three to five hours each, because Burp Community cannot save projects. Every mission's flags are locked in as you go, so a crash only costs the mission you were in. By the final flag you will have used every tool in Burp Suite Community at least once."
+				"The CTF is split into six self-contained missions of roughly three to five hours each, because Burp Community cannot save projects. Every mission's flags are locked in as you go, so a crash only costs the mission you were in."
 			],
 			"facts": [
 				{ "label": "Missions", "value": "6" },
@@ -25,8 +25,7 @@
 				"Proxy: interception, history filters, match and replace, WebSockets",
 				"Repeater and Inspector: chaining requests, race conditions, request smuggling",
 				"Intruder: throttle-aware attacks with small, smart wordlists",
-				"Sequencer, Decoder and Comparer: session analysis and multi-layer decoding",
-				"Logger, Organizer, DOM Invader, Clickbandit and BApp extensions"
+				"Sequencer, Decoder and Comparer: session analysis and multi-layer decoding"
 			],
 			"requirements": [
 				"Burp Suite Community Edition (pre-installed on Kali Linux)",
@@ -39,19 +38,7 @@
 			"briefing": {
 				"intro": [
 					"You are Nils Berg, an external penetration tester hired by a whistleblower inside MegaCorp - a mid-sized fintech under investigation for fraud. The whistleblower has deliberately exposed fragments of evidence across nine services on the company's external perimeter. Each fragment is a flag, formatted FLAG{...}.",
-					"Your job is to prove the breach is possible. The catch: MegaCorp's infrastructure is deliberately fussy. Nothing works out of the box. Before you find a single flag, you must configure your tool - Burp Suite Community Edition - against nine different quirks of their setup.",
-					"There are 9 flags in this mission. When you submit all nine, Mission 2 unlocks."
-				],
-				"objectives": [
-					{ "n": 1, "title": "The HTTPS Portal", "task": "A MegaCorp portal at portal.megacorp.local hides something in its response headers. You will only see it if your tool is intercepting TLS traffic." },
-					{ "n": 2, "title": "The Second Listener", "task": "One of MegaCorp's services is on a port your proxy is not listening on. Find it, and adjust your proxy." },
-					{ "n": 3, "title": "The Client Certificate Gate", "task": "A legacy host refuses to speak to you unless you present a specific client certificate. The certificate you need is bundled with the mission." },
-					{ "n": 4, "title": "The Hidden Internal Host", "task": "A service on MegaCorp's internal network is unreachable directly. There is a way through - but not a direct one." },
-					{ "n": 5, "title": "The NTLM Wall", "task": "An intranet service rejects anonymous requests. It demands NTLM authentication. Your tool can carry it." },
-					{ "n": 6, "title": "The Modern-Only Endpoint", "task": "A service responds only over HTTP/2. Over HTTP/1.1, it politely declines. Your tool can be told which protocol to use." },
-					{ "n": 7, "title": "The Ghost Hostname", "task": "One hostname has no DNS record. Your browser cannot resolve it. But your tool can be told where to look." },
-					{ "n": 8, "title": "The Hidden JSON Route", "task": "An API endpoint isn't linked from any page. It only surfaces when you filter your site map by content type." },
-					{ "n": 9, "title": "The Broken Certificate", "task": "A MegaCorp service presents an expired certificate. When the handshake fails, your tool logs why. Read the log carefully." }
+					"Your job is to prove the breach is possible. The catch: MegaCorp's infrastructure is deliberately fussy. Nothing works out of the box. Before you find a single flag, you must configure your tool - Burp Suite Community Edition - against nine different quirks of their setup."
 				],
 				"setup": [
 					"Open Burp Suite Community Edition. In Kali Linux, it's pre-installed. On other systems, download it from portswigger.net/burp/communitydownload.",
@@ -63,25 +50,39 @@
 				"hints": [
 					{ "unlocksAfter": "10min", "text": "Flag 1 is not visible in the page content. Where does Burp keep the requests it has seen? Try the Proxy, HTTP history tab." },
 					{ "unlocksAfter": "20min", "text": "Flag 2 lives on a port your proxy is not listening on. Burp can listen on more than one port at once - check Proxy settings, Proxy listeners." },
-					{ "unlocksAfter": "3flags", "text": "Flag 3 needs a client certificate. The mission bundle ships one in the certs/ folder. In Burp, it goes under Proxy settings, TLS, Client TLS certificates." },
-					{ "unlocksAfter": "4flags", "text": "Flag 4 is behind a SOCKS proxy. Burp's SOCKS upstream setting is under Settings, Network, Connections, SOCKS proxy." },
-					{ "unlocksAfter": "6flags", "text": "Flag 6 needs HTTP/2. In Burp, Settings, Tools, Proxy, HTTP/2. Toggle 'Enable HTTP/2' on and try again." },
-					{ "unlocksAfter": "8flags", "text": "Flag 9 is an expired certificate. In Burp, look under Dashboard, Event log. The flag is in the certificate's Common Name field." }
+					{ "unlocksAfter": "3flags", "text": "Flag 3 needs a client certificate. The mission bundle ships one in the certs/ folder. In Burp, it goes under Proxy settings, TLS, Client TLS certificates." }
 				]
 			},
-			"flags": [
-				"FLAG{m1_01_burp_ca_https_intercept_a41c}",
-				"FLAG{m1_02_second_listener_cli_9d27}",
-				"FLAG{m1_03_client_cert_legacy_5be0}",
-				"FLAG{m1_04_socks_upstream_internal_c3f8}",
-				"FLAG{m1_05_ntlm_platform_auth_e712}",
-				"FLAG{m1_06_http2_only_2ad9}",
-				"FLAG{m1_07_ghost_hostname_override_f650}",
-				"FLAG{m1_08_scope_sitemap_json_1b8d}",
-				"FLAG{m1_09_expired_cn_dashboard_77ea}"
-			],
 			"labs": [
-				{ "id": "mission-1-recon", "title": "Mission 1: Setup & Recon", "summary": "Configure Burp against MegaCorp's fussy environments: CA certificates, listeners, client certs, SOCKS upstream, NTLM, HTTP/2.", "flags": 8, "time": "3–5 h" },
+				{ 
+					"id": "mission-1-recon", 
+					"title": "Mission 1: Setup & Recon", 
+					"summary": "Configure Burp against MegaCorp's fussy environments: CA certificates, listeners, client certs, SOCKS upstream, NTLM, HTTP/2.", 
+					"flags": 9, 
+					"time": "3–5 h",
+					"objectives": [
+						{ "n": 1, "title": "The HTTPS Portal", "task": "A MegaCorp portal at portal.megacorp.local hides something in its response headers. You will only see it if your tool is intercepting TLS traffic." },
+						{ "n": 2, "title": "The Second Listener", "task": "One of MegaCorp's services is on a port your proxy is not listening on. Find it, and adjust your proxy." },
+						{ "n": 3, "title": "The Client Certificate Gate", "task": "A legacy host refuses to speak to you unless you present a specific client certificate. The certificate you need is bundled with the mission." },
+						{ "n": 4, "title": "The Hidden Internal Host", "task": "A service on MegaCorp's internal network is unreachable directly. There is a way through - but not a direct one." },
+						{ "n": 5, "title": "The NTLM Wall", "task": "An intranet service rejects anonymous requests. It demands NTLM authentication. Your tool can carry it." },
+						{ "n": 6, "title": "The Modern-Only Endpoint", "task": "A service responds only over HTTP/2. Over HTTP/1.1, it politely declines. Your tool can be told which protocol to use." },
+						{ "n": 7, "title": "The Ghost Hostname", "task": "One hostname has no DNS record. Your browser cannot resolve it. But your tool can be told where to look." },
+						{ "n": 8, "title": "The Hidden JSON Route", "task": "An API endpoint isn't linked from any page. It only surfaces when you filter your site map by content type." },
+						{ "n": 9, "title": "The Broken Certificate", "task": "A MegaCorp service presents an expired certificate. When the handshake fails, your tool logs why. Read the log carefully." }
+					],
+					"flags_list": [
+						"FLAG{m1_01_burp_ca_https_intercept_a41c}",
+						"FLAG{m1_02_second_listener_cli_9d27}",
+						"FLAG{m1_03_client_cert_legacy_5be0}",
+						"FLAG{m1_04_socks_upstream_internal_c3f8}",
+						"FLAG{m1_05_ntlm_platform_auth_e712}",
+						"FLAG{m1_06_http2_only_2ad9}",
+						"FLAG{m1_07_ghost_hostname_override_f650}",
+						"FLAG{m1_08_scope_sitemap_json_1b8d}",
+						"FLAG{m1_09_expired_cn_dashboard_77ea}"
+					]
+				},
 				{ "id": "mission-2-interception", "title": "Mission 2: Interception & History", "summary": "Manipulate live traffic and dig through proxy history: role tampering, WebSockets, match and replace rules.", "flags": 6, "time": "3–5 h" },
 				{ "id": "mission-3-repeater", "title": "Mission 3: Repeater & Inspector", "summary": "Surgical exploitation of the API and payment services: chained calls, race conditions, request smuggling.", "flags": 6, "time": "3–5 h" },
 				{ "id": "mission-4-intruder", "title": "Mission 4: Intruder Mastery", "summary": "Brute-force work sized for Community's throttled Intruder: PINs, pitchfork attacks, token chains.", "flags": 5, "time": "3–5 h" },
@@ -100,57 +101,8 @@
 			"difficulty": "Hard",
 			"status": "coming-soon",
 			"tagline": "Hands-on challenges for Nmap, one of the tools the Final CTF requires.",
-			"description": [
-				"This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF, which needs every tool from this track.",
-				"It is still being built. Contributors are welcome."
-			],
-			"facts": [],
-			"learn": [],
-			"requirements": [],
-			"readme": "challenges/nmap/README.md",
-			"repo": "https://github.com/Cybersecurity-CTF-Org",
-			"labs": [],
-			"contributors": []
-		},
-		{
-			"slug": "hydra",
-			"track": "jr-pentest",
-			"title": "Hydra-CTF",
-			"tool": "Hydra",
-			"difficulty": "Hard",
-			"status": "coming-soon",
-			"tagline": "Hands-on challenges for Hydra, one of the tools the Final CTF requires.",
-			"description": [
-				"This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF, which needs every tool from this track.",
-				"It is still being built. Contributors are welcome."
-			],
-			"facts": [],
-			"learn": [],
-			"requirements": [],
-			"readme": "challenges/hydra/README.md",
-			"repo": "https://github.com/Cybersecurity-CTF-Org",
-			"labs": [],
-			"contributors": []
-		},
-		{
-			"slug": "final",
-			"track": "jr-pentest",
-			"title": "Jr Penetration Testing CTF",
-			"tool": "Burp Suite, Nmap, Hydra and more",
-			"difficulty": "Hard",
-			"status": "coming-soon",
-			"tagline": "The final challenge. It needs every tool you practised in the tool-specific CTFs. Best of luck.",
-			"description": [
-				"Complete the tool-specific CTFs first: this final CTF combines all of them and you choose which tool to use at each step.",
-				"It is still being built."
-			],
-			"facts": [],
-			"learn": [],
-			"requirements": [],
-			"readme": "challenges/final/README.md",
-			"repo": "https://github.com/Cybersecurity-CTF-Org",
-			"labs": [],
-			"contributors": []
+			"description": [ "This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF." ],
+			"facts": [], "learn": [], "requirements": [], "readme": "challenges/nmap/README.md", "repo": "https://github.com/Cybersecurity-CTF-Org", "labs": [], "contributors": []
 		}
 	]
 }
