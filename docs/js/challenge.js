@@ -64,7 +64,6 @@
 		return Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0") + "m left";
 	};
 
-	// ---------- static sections ----------
 	function hero(ch, os) {
 		const live = ch.status === "live";
 		const dl = CFG.launcher.downloads[os];
@@ -82,7 +81,6 @@
 				h("a", { class: "btn", href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "GitHub" })) : null);
 	}
 
-	// ---------- global briefing (story & setup) ----------
 	function briefingPanel(ch) {
 		if (!ch.briefing) return null;
 		const b = ch.briefing;
@@ -104,7 +102,6 @@
 		);
 	}
 
-	// ---------- inline flag submission ----------
 	function inlineFlagPanel(lab) {
 		const storageKey = "ff_flags_" + lab.id;
 		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
@@ -223,7 +220,6 @@
 		];
 	}
 
-	// ---------- launch panel ----------
 	function check(status, title, detail, extra) {
 		const sym = { ok: "✓", bad: "!", wait: "…", idle: "·" }[status] || "·";
 		return h("li", { class: "check" },
@@ -351,7 +347,6 @@
 			h("p", { text: "This challenge is not ready yet. Check back soon." }));
 	}
 
-	// ---------- page assembly ----------
 	function crumbs(ch, track) {
 		return h("nav", { class: "crumbs", "aria-label": "Breadcrumb" },
 			h("a", { href: "index.html", text: "Flag Forge" }), h("span", { "aria-hidden": "true", text: "/" }),
@@ -366,7 +361,6 @@
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
-		// Notice: Contributors Panel is REMOVED here
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
@@ -419,5 +413,5 @@
 		return { ch, ctl };
 	}
 
-	return { init, renderChallenge, detectOS, installCommands, fmtLeft, initials };
+	return { init, renderChallenge, detectOS, installCommands, fmtLeft };
 });

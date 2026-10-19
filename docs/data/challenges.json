@@ -34,7 +34,7 @@
 				"Firefox, Chrome, Edge or Brave for the launcher extension"
 			],
 			"readme": "challenges/burp-suite/README.md",
-			"repo": "https://github.com/Cybersecurity-CTF-Org/operation-silent-proxy",
+			"repo": "https://github.com/FlagForge-CTF",
 			"briefing": {
 				"intro": [
 					"You are Nils Berg, an external penetration tester hired by a whistleblower inside MegaCorp - a mid-sized fintech under investigation for fraud. The whistleblower has deliberately exposed fragments of evidence across nine services on the company's external perimeter. Each fragment is a flag, formatted FLAG{...}.",
@@ -88,9 +88,6 @@
 				{ "id": "mission-4-intruder", "title": "Mission 4: Intruder Mastery", "summary": "Brute-force work sized for Community's throttled Intruder: PINs, pitchfork attacks, token chains.", "flags": 5, "time": "3–5 h" },
 				{ "id": "mission-5-sessions", "title": "Mission 5: Sequencer, Decoder, Comparer & Sessions", "summary": "Cryptographic and session-layer analysis of MegaCorp's token handling, macros and cookie jar.", "flags": 5, "time": "3–5 h" },
 				{ "id": "mission-6-finale", "title": "Mission 6: Client-Side, Extensions & Finale", "summary": "DOM XSS, clickjacking, Logger-only flags, JWT forging, then decrypt the CEO's secret.", "flags": 6, "time": "3–5 h" }
-			],
-			"contributors": [
-				{ "name": "Srinish Basu", "role": "Cyber Lead, Elev8Labs", "github": "", "photo": "" }
 			]
 		},
 		{
@@ -102,7 +99,18 @@
 			"status": "coming-soon",
 			"tagline": "Hands-on challenges for Nmap, one of the tools the Final CTF requires.",
 			"description": [ "This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF." ],
-			"facts": [], "learn": [], "requirements": [], "readme": "challenges/nmap/README.md", "repo": "https://github.com/Cybersecurity-CTF-Org", "labs": [], "contributors": []
+			"facts": [], "learn": [], "requirements": [], "readme": "challenges/nmap/README.md", "repo": "https://github.com/FlagForge-CTF", "labs": []
+		},
+		{
+			"slug": "hydra",
+			"track": "jr-pentest",
+			"title": "Hydra-CTF",
+			"tool": "Hydra",
+			"difficulty": "Hard",
+			"status": "coming-soon",
+			"tagline": "Hands-on challenges for Hydra, one of the tools the Final CTF requires.",
+			"description": [ "This tool-specific CTF prepares you for the Final Jr Penetration Testing CTF." ],
+			"facts": [], "learn": [], "requirements": [], "readme": "challenges/hydra/README.md", "repo": "https://github.com/FlagForge-CTF", "labs": []
 		}
 	]
 }
