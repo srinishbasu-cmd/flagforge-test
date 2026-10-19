@@ -81,14 +81,14 @@ body {
 }
 
 /* ==========================================================
-   BUTTONS (HTB STYLE)
+   BUTTONS (HTB STYLE) - Fixed color
    ========================================================== */
 .btn-primary {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
 	background: var(--accent);
-	color: #000;
+	color: #000 !important; /* Forces the text to be black so it doesn't vanish */
 	font-weight: 700;
 	padding: 10px 20px;
 	border-radius: 4px;
@@ -185,6 +185,37 @@ body {
 }
 
 /* ==========================================================
+   ABOUT SECTION (HOME PAGE)
+   ========================================================== */
+.about-section {
+	padding: 100px 10%;
+	background: var(--bg);
+	border-top: 1px solid var(--border);
+}
+
+.about-grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 48px;
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.about-text h2 {
+	font-size: 2rem;
+	font-weight: 800;
+	margin-bottom: 24px;
+	color: var(--text);
+}
+
+.about-text p {
+	color: var(--text-muted);
+	font-size: 1.1rem;
+	line-height: 1.7;
+	margin-bottom: 16px;
+}
+
+/* ==========================================================
    INNER PAGES & GRIDS
    ========================================================== */
 .page-header {
@@ -209,14 +240,53 @@ body {
 }
 
 .landing-main {
-	padding: 80px 10%;
+	padding: 60px 10%;
 }
 .landing-main h2 {
 	font-size: 2rem;
 	margin-bottom: 16px;
 }
 
-/* Challenge Cards */
+/* ==========================================================
+   CATEGORY HEADERS (CHALLENGES PAGE)
+   ========================================================== */
+.category-header {
+	padding: 20px 24px;
+	border-radius: 8px;
+	margin: 48px 0 24px;
+}
+.category-header h2 {
+	margin: 0 0 8px;
+	font-size: 1.75rem;
+	font-weight: 800;
+	color: var(--text);
+}
+.category-header p {
+	margin: 0;
+	font-size: 1rem;
+	color: var(--text-muted);
+}
+
+.category-red {
+	background: linear-gradient(90deg, rgba(255, 92, 108, 0.15) 0%, transparent 100%);
+	border-left: 4px solid var(--danger);
+}
+.category-blue {
+	background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, transparent 100%);
+	border-left: 4px solid #3b82f6;
+}
+.category-ai {
+	background: linear-gradient(90deg, rgba(168, 85, 247, 0.15) 0%, transparent 100%);
+	border-left: 4px solid #a855f7;
+}
+.category-jobs {
+	background: linear-gradient(90deg, rgba(46, 229, 157, 0.15) 0%, transparent 100%);
+	border-left: 4px solid var(--accent);
+}
+
+/* ==========================================================
+   CHALLENGE CARDS
+   ========================================================== */
 .challenge-grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
@@ -391,4 +461,5 @@ body {
 	.hero-overlay { background: linear-gradient(180deg, #0b0f12 0%, rgba(11, 15, 18, 0.8) 100%); }
 	.hero-title { font-size: 2.5rem; }
 	.landing-main { padding: 40px 5%; }
+	.about-grid { grid-template-columns: 1fr; }
 }

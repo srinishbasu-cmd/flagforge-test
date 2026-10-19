@@ -17,7 +17,6 @@
 	const doc = env.document;
 	const CFG = env.config;
 
-	// ---------- tiny DOM helper ----------
 	function h(tag, props, ...kids) {
 		const el = doc.createElement(tag);
 		for (const [k, v] of Object.entries(props || {})) {
@@ -361,13 +360,14 @@
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
+		// Breadcrumbs (crumbs) have been removed from the page assembly here
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
 			aboutPanel(ch), readmePanel(ch));
 			
 		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, os) : null);
-		const page = h("div", {}, crumbs(ch, track), hero(ch, os), h("div", { class: "layout" }, main, aside));
+		const page = h("div", {}, hero(ch, os), h("div", { class: "layout" }, main, aside));
 		return { page, ctl };
 	}
 
