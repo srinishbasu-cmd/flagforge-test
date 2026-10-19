@@ -82,6 +82,49 @@
 				h("a", { class: "btn", href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "GitHub" })) : null);
 	}
 
+	// ---------- briefing panel ----------
+	function briefingPanel(ch) {
+		if (!ch.briefing) return null;
+		const b = ch.briefing;
+
+		const intro = h("div", { class: "briefing-intro" },
+			(b.intro || []).map((p) => h("p", { text: p }))
+		);
+
+		const objectives = h("ol", {},
+			(b.objectives || []).map((o) =>
+				h("li", {}, h("strong", { text: o.n + ". " + o.title }), " — " + o.task)
+			)
+		);
+
+		const setup = h("ol", {},
+			(b.setup || []).map((s) => h("li", { text: s }))
+		);
+
+		const hints = h("ul", {},
+			(b.hints || []).map((hi) =>
+				h("li", {}, h("span", { class: "hint-badge", text: hi.unlocksAfter }), " " + hi.text)
+			)
+		);
+
+		return h("section", { class: "panel briefing", id: "briefing" },
+			h("h2", { text: "Briefing" }),
+			intro,
+			h("details", { class: "briefing-details", open: true },
+				h("summary", { text: "Objectives — 9 flags to find" }),
+				objectives
+			),
+			h("details", { class: "briefing-details" },
+				h("summary", { text: "Setup guide" }),
+				setup
+			),
+			h("details", { class: "briefing-details" },
+				h("summary", { text: "Hints (unlock as you progress)" }),
+				hints
+			)
+		);
+	}
+
 	function aboutPanel(ch) {
 		const list = (title, items) => items && items.length ? [h("h3", { text: title }), h("ul", { class: "plain" }, items.map((t) => h("li", { text: t })))] : [];
 		return h("section", { class: "panel", id: "about" },
@@ -139,7 +182,6 @@
 			h("p", { class: "muted small" }, "Want to help? ", h("a", { href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "Contribute on GitHub" }), "."));
 	}
 
-	// A direct .xpi link must open in the SAME tab: in a new tab Firefox can show the "blocked" notice without an Allow button.
 	function extLink(label, url) {
 		const direct = /\.xpi(\?|#|$)/i.test(url);
 		return h("a", { class: "btn small", href: url, target: direct ? null : "_blank", rel: direct ? null : "noopener noreferrer", text: label });
@@ -212,13 +254,24 @@
 		} else if (L.status === "stopping") {
 			controls = h("div", { class: "hint", text: "Stopping…" });
 		} else if (L.status === "running") {
+			// UI FIX: Only show the main app button prominently, hide the rest in a <details> tag
+			const mainUrl = (L.urls || []).find(u => u.link) || (L.urls && L.urls[0]);
+			const otherUrls = (L.urls || []).filter(u => u !== mainUrl);
+
 			controls = h("div", { class: "mission-state" },
 				h("div", { class: "row" },
-					(L.urls || []).map((u) => u.link
-						? h("a", { class: "btn small primary", href: u.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + u.name })
-						: h("code", { text: u.url })),
+					mainUrl && mainUrl.link ? h("a", { class: "btn small primary", href: mainUrl.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + mainUrl.name }) : null,
 					h("span", { class: "hint", "data-expires": L.expiresAt, text: fmtLeft(L.expiresAt - Date.now()) })),
 				L.ready === false ? h("div", { class: "hint", text: "Some services are still warming up. Give it a minute." }) : null,
+				
+				// Dev links hidden by default
+				otherUrls.length > 0 ? h("details", { class: "dev-links" },
+					h("summary", { class: "hint", text: "Show all lab services (Dev Mode)" }),
+					h("div", { class: "row" },
+						otherUrls.map(u => u.link ? h("a", { class: "btn small", href: u.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + u.name }) : null)
+					)
+				) : null,
+
 				h("div", { class: "row" },
 					h("button", { type: "button", class: "btn small", text: "+1 hour", onclick: () => ctl.extend(lab.id, 1) }),
 					h("button", { type: "button", class: "btn small danger", text: "Stop lab", onclick: () => ctl.stop(lab.id) })));
@@ -283,9 +336,13 @@
 		const live = ch.status === "live" && ch.labs.length > 0;
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
+		
+		// Briefing is injected before the Launch Panel
 		const main = h("div", { class: "main" },
+			briefingPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
 			aboutPanel(ch), readmePanel(ch), contributorsPanel(ch));
+			
 		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, os) : null);
 		const page = h("div", {}, crumbs(ch, track), hero(ch, os), h("div", { class: "layout" }, main, aside));
 		return { page, ctl };

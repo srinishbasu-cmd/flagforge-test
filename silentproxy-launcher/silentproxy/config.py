@@ -9,15 +9,13 @@ HOST_DESCRIPTION = "Operation Silent Proxy lab launcher"
 
 # Where the lab catalogue lives. ADJUST to the real org/repo before releasing.
 REGISTRY_URL = (
-    "https://raw.githubusercontent.com/Cybersecurity-CTF-Org/"
-    "operation-silent-proxy/main/labs.json"
+    "https://raw.githubusercontent.com/srinishbasu-cmd/"
+    "flagforge-test/main/labs.json"
 )
-# Lab archives and the registry may only come from here (https only).
 ALLOWED_URL_PREFIXES = (
-    "https://github.com/Cybersecurity-CTF-Org/",
-    "https://raw.githubusercontent.com/Cybersecurity-CTF-Org/",
-)
-# Hosts a GitHub download may redirect through.
+    "https://github.com/srinishbasu-cmd/",
+    "https://raw.githubusercontent.com/srinishbasu-cmd/",
+)# Hosts a GitHub download may redirect through.
 ALLOWED_REDIRECT_SUFFIXES = (".githubusercontent.com", "github.com")
 
 # Extension identities allowed to talk to this host (set at install time).

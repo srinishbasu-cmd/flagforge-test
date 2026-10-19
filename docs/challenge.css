@@ -118,3 +118,29 @@
 @media (prefers-reduced-motion: reduce) {
 	.progress > i.indeterminate { animation: none; width: 100%; opacity: 0.5; }
 }
+
+/* --- Briefing Panel --- */
+.briefing h2 { margin-top: 0; }
+.briefing-intro p { line-height: 1.6; margin-bottom: 1rem; }
+.briefing-details { margin: 1rem 0; border-top: 1px solid var(--border); padding-top: 1rem; }
+.briefing-details summary { cursor: pointer; font-weight: 600; padding: 0.5rem 0; color: var(--accent); }
+.briefing-details summary:hover { color: #5af0b4; }
+.briefing ol, .briefing ul { padding-left: 1.5rem; line-height: 1.6; margin-top: 1rem; color: var(--text-muted); }
+.briefing li { margin: 0.6rem 0; }
+.briefing li strong { color: var(--text); }
+.hint-badge {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 2px 8px;
+  border-radius: 4px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border: 1px solid rgba(46, 229, 157, 0.35);
+  margin-right: 0.5rem;
+}
+
+/* --- Dev Mode Links --- */
+.dev-links { margin-top: 12px; padding: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
+.dev-links summary { cursor: pointer; font-size: 0.875rem; color: var(--text-muted); }
+.dev-links summary:hover { color: var(--text); }
