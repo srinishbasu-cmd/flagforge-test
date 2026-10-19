@@ -104,7 +104,7 @@
 		);
 	}
 
-	// ---------- inline flag submission (More Interactive) ----------
+	// ---------- inline flag submission ----------
 	function inlineFlagPanel(lab) {
 		const storageKey = "ff_flags_" + lab.id;
 		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
@@ -120,7 +120,6 @@
 			const val = input.value.trim();
 			if (!val) return;
 
-			// Reset states
 			input.classList.remove("success-border", "error-border");
 			msg.classList.remove("show", "success", "error", "info");
 			
@@ -134,7 +133,6 @@
 				found.add(val);
 				localStorage.setItem(storageKey, JSON.stringify([...found]));
 				
-				// Update UI
 				countText.textContent = `${found.size} / ${lab.flags_list.length} Flags`;
 				progressFill.style.width = `${(found.size / lab.flags_list.length) * 100}%`;
 				
@@ -198,36 +196,6 @@
 		return panel;
 	}
 
-	function initials(name) {
-		return String(name || "?").split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join("") || "?";
-	}
-
-	function personCard(p) {
-		const user = /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})$/.test(p.github || "") ? p.github : "";
-		const photo = p.photo && /^[\w./-]+$/.test(p.photo) && !p.photo.includes("..") ? p.photo : "";
-		const src = photo || (user ? `https://github.com/${user}.png?size=160` : "");
-		const avatar = h("span", { class: "avatar", "aria-hidden": "true" });
-		const fallback = () => { clear(avatar); avatar.append(doc.createTextNode(initials(p.name))); };
-		if (src) {
-			const img = h("img", { src, alt: "", width: 56, height: 56, loading: "lazy", referrerpolicy: "no-referrer" });
-			img.addEventListener("error", fallback);
-			avatar.append(img);
-		} else fallback();
-		const name = user
-			? h("a", { href: `https://github.com/${user}`, target: "_blank", rel: "noopener noreferrer", text: p.name })
-			: h("span", { text: p.name });
-		return h("li", { class: "person" }, avatar, h("div", {}, h("div", { class: "person-name" }, name), p.role ? h("div", { class: "muted", text: p.role }) : null));
-	}
-
-	function contributorsPanel(ch) {
-		const people = ch.contributors || [];
-		return h("section", { class: "panel", id: "contributors" },
-			h("h2", { text: "Contributors" }),
-			people.length ? h("ul", { class: "people" }, people.map(personCard))
-				: h("p", { class: "muted", text: "No contributors listed yet." }),
-			h("p", { class: "muted small" }, "Want to help? ", h("a", { href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "Contribute on GitHub" }), "."));
-	}
-
 	function extLink(label, url) {
 		const direct = /\.xpi(\?|#|$)/i.test(url);
 		return h("a", { class: "btn small", href: url, target: direct ? null : "_blank", rel: direct ? null : "noopener noreferrer", text: label });
@@ -255,7 +223,7 @@
 		];
 	}
 
-	// ---------- launch panel (live challenges) ----------
+	// ---------- launch panel ----------
 	function check(status, title, detail, extra) {
 		const sym = { ok: "✓", bad: "!", wait: "…", idle: "·" }[status] || "·";
 		return h("li", { class: "check" },
@@ -325,7 +293,6 @@
 
 		const chip = L.status === "running" ? h("span", { class: "badge accent", text: "Running" }) : null;
 		
-		// Build extra sections that only show when running
 		const extraSections = [];
 		if (L.status === "running" && lab.objectives) {
 			extraSections.push(
@@ -346,7 +313,7 @@
 				h("div", { class: "muted small", text: lab.summary }),
 				h("div", { class: "muted small", text: [lab.flags ? lab.flags + " flags" : "", lab.time].filter(Boolean).join(" · ") }),
 				errorBox(L.error),
-				extraSections // <-- Inject objectives and flag box here
+				extraSections
 			),
 			controls);
 	}
@@ -399,10 +366,11 @@
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
+		// Notice: Contributors Panel is REMOVED here
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
-			aboutPanel(ch), readmePanel(ch);
+			aboutPanel(ch), readmePanel(ch));
 			
 		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, os) : null);
 		const page = h("div", {}, crumbs(ch, track), hero(ch, os), h("div", { class: "layout" }, main, aside));
@@ -422,7 +390,7 @@
 			if (!r.ok) throw new Error("HTTP " + r.status);
 			data = await r.json();
 		} catch (_e) {
-			showMessage(app, "Could not load the challenge data", "If you opened this file directly from disk, serve the folder with a local web server instead (for example: python3 -m http.server).");
+			showMessage(app, "Could not load the challenge data", "If you opened this file directly from disk, serve the folder with a local web server instead.");
 			return null;
 		}
 		const slug = new URLSearchParams(env.location.search).get("c") || "";
