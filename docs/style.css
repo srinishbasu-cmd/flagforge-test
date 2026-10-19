@@ -242,3 +242,96 @@ body {
 	.hero-buttons { flex-direction: column; width: 100%; }
 	.btn-primary.large, .btn-secondary.large { width: 100%; }
 }
+/* ==========================================================
+   INNER PAGE HEADERS & GRIDS
+   ========================================================== */
+.page-header {
+	padding: 140px 10% 60px;
+	background: linear-gradient(180deg, rgba(18, 24, 30, 1) 0%, var(--bg) 100%);
+	border-bottom: 1px solid var(--border);
+}
+.page-header h1 {
+	font-size: clamp(2.5rem, 4vw, 3.5rem);
+	font-weight: 800;
+	margin-bottom: 16px;
+}
+.page-header .lead {
+	font-size: 1.2rem;
+	color: var(--text-muted);
+	max-width: 800px;
+}
+.container {
+	max-width: 1400px;
+	margin: 0 auto;
+	width: 100%;
+}
+
+/* Challenge Cards */
+.challenge-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+	gap: 24px;
+}
+
+.challenge-card {
+	display: flex;
+	flex-direction: column;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 12px;
+	padding: 24px;
+	text-decoration: none;
+	color: var(--text);
+	transition: all 0.3s ease;
+}
+
+.challenge-card:hover {
+	transform: translateY(-4px);
+	border-color: rgba(46, 229, 157, 0.4);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+.challenge-card.coming-soon {
+	opacity: 0.7;
+	cursor: not-allowed;
+}
+.challenge-card.coming-soon:hover {
+	transform: none;
+	border-color: var(--border);
+	box-shadow: none;
+}
+
+.card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	margin-bottom: 16px;
+}
+.card-header h3 {
+	font-size: 1.25rem;
+	font-weight: 700;
+	margin: 0;
+}
+
+.card-desc {
+	color: var(--text-muted);
+	font-size: 0.95rem;
+	line-height: 1.5;
+	flex-grow: 1;
+	margin-bottom: 24px;
+}
+
+.card-footer {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	border-top: 1px solid var(--border);
+	padding-top: 16px;
+	font-size: 0.875rem;
+	color: var(--text-muted);
+}
+
+.btn-primary.small {
+	padding: 6px 12px;
+	font-size: 0.875rem;
+}
