@@ -82,6 +82,61 @@
 				h("a", { class: "btn", href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "GitHub" })) : null);
 	}
 
+	// ---------- flag submission ----------
+	function flagPanel(ch) {
+		if (!ch.flags || !ch.flags.length) return null;
+		
+		// Load progress from localStorage
+		const storageKey = "ff_flags_" + ch.slug;
+		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
+
+		const input = h("input", { type: "text", placeholder: "FLAG{...}", class: "flag-input" });
+		const msg = h("div", { class: "flag-msg" });
+		const progressText = h("span", { class: "hint", text: `${found.size} / ${ch.flags.length} flags found` });
+
+		const submit = h("button", { type: "button", class: "btn primary", text: "Submit Flag" });
+		
+		submit.addEventListener("click", () => {
+			const val = input.value.trim();
+			if (!val) return;
+			
+			if (found.has(val)) {
+				msg.textContent = "You already submitted this flag.";
+				msg.className = "flag-msg info";
+				return;
+			}
+
+			if (ch.flags.includes(val)) {
+				found.add(val);
+				localStorage.setItem(storageKey, JSON.stringify([...found]));
+				progressText.textContent = `${found.size} / ${ch.flags.length} flags found`;
+				msg.textContent = "✅ Correct! Flag accepted.";
+				msg.className = "flag-msg success";
+				input.value = "";
+				if (found.size === ch.flags.length) {
+					msg.textContent = "🎉 Mission Complete! All flags found.";
+				}
+			} else {
+				msg.textContent = "❌ Incorrect flag. Keep trying.";
+				msg.className = "flag-msg error";
+			}
+		});
+
+		input.addEventListener("keypress", (e) => { if (e.key === "Enter") submit.click(); });
+
+		return h("section", { class: "panel briefing", id: "submit-flag" },
+			h("div", { class: "row", style: "justify-content: space-between; align-items: flex-end;" },
+				h("h2", { text: "Submit Flag", style: "margin: 0;" }),
+				progressText
+			),
+			h("div", { class: "row", style: "margin-top: 16px;" },
+				input,
+				submit
+			),
+			msg
+		);
+	}
+
 	// ---------- briefing panel ----------
 	function briefingPanel(ch) {
 		if (!ch.briefing) return null;
@@ -337,9 +392,10 @@
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
-		// Briefing is injected before the Launch Panel
+		// Briefing and Flag submission are injected before the Launch Panel
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
+			flagPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
 			aboutPanel(ch), readmePanel(ch), contributorsPanel(ch));
 			

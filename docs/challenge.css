@@ -144,3 +144,26 @@
 .dev-links { margin-top: 12px; padding: 12px; background: rgba(255, 255, 255, 0.02); border: 1px solid var(--border); border-radius: 8px; }
 .dev-links summary { cursor: pointer; font-size: 0.875rem; color: var(--text-muted); }
 .dev-links summary:hover { color: var(--text); }
+/* --- Flag Submission --- */
+.flag-input {
+  flex-grow: 1;
+  padding: 10px 14px;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+}
+.flag-input:focus {
+  border-color: var(--accent);
+}
+.flag-msg {
+  margin-top: 12px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+.flag-msg.success { color: var(--accent); }
+.flag-msg.error { color: var(--danger); }
+.flag-msg.info { color: var(--text-muted); }
