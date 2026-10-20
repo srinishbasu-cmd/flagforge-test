@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="Flag Forge - Master offensive security tools through hands-on CTF challenges.">
 	<title>Flag Forge · Master Cybersecurity</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 </head>
-
-<body class="landing-page">
+<body>
+	<div class="bg-grid"></div>
 
 	<nav class="navbar">
 		<a href="index.html" class="nav-logo">
@@ -18,7 +16,7 @@
 			FLAG FORGE
 		</a>
 		<div class="nav-links">
-			<a href="index.html" style="color: var(--text);">Home</a>
+			<a href="index.html" class="active">Home</a>
 			<a href="challenges.html">Challenges</a>
 			<a href="members.html">Members</a>
 			<a href="apply.html">Apply</a>
@@ -29,35 +27,44 @@
 	</nav>
 
 	<header class="hero-section">
-		<div class="hero-overlay"></div>
 		<div class="hero-content">
-			<h1 class="hero-title">Build and scale a cyber<br>workforce in the AI era</h1>
+			<div class="hero-badge">SEASON 01 — LIVE</div>
+			<h1 class="hero-title">
+				Break in.<br>
+				<span class="text-gradient">Forge the flag.</span>
+			</h1>
 			<p class="hero-subtitle">
-				Equip threat-ready cyber teams for an AI-accelerated landscape with hands-on labs, assessments, and pathways that build top performing teams.
+				Realistic offensive and defensive labs. Real tools, real targets, real skills.
 			</p>
+			<div class="hero-buttons">
+				<a href="challenges.html" class="btn-primary">Start hacking →</a>
+				<a href="members.html" class="btn-secondary">Meet the team</a>
+			</div>
 		</div>
-		<div class="hero-decoration"></div>
 	</header>
 
-	<!-- ABOUT SECTION -->
-	<section class="about-section container">
+	<section class="about-section">
 		<div class="about-grid">
 			<div class="about-text">
-				<h2>Bridging the Gap in Cybersecurity Education</h2>
-				<p>Professional cybersecurity certifications are expensive and often out of reach for students and early-career learners. At the same time, most free learning platforms teach concepts individually but rarely test whether a learner can combine multiple tools the way a real engagement demands.</p>
-				<p>Flag Forge is a free, open, and contribution-driven space dedicated to cybersecurity CTFs and practical learning. We build progressively harder, hands-on challenges that mirror what professional certifications actually test—without being the certification itself.</p>
+				<h2>Built by hackers,<br>for future hackers.</h2>
+				<p>Flag Forge is a capture-the-flag platform designed to take you from curious to capable. Every mission drops you into a live environment where you intercept traffic, enumerate services, and crack credentials — just like on a real engagement.</p>
+				<p>Progress through structured tracks, submit flags, and watch your skills compound.</p>
 			</div>
-			<div class="about-text">
-				<h2>Accessibility, Not Replacement</h2>
-				<p>This is not a substitute for certification. It is a bridge for people who cannot yet afford one. Through our challenges, learners can practice exact skill categories, work with industry-standard tools, and attempt realistic, scenario-based problems.</p>
-				<p>Every challenge is original content, built by our contributors, reviewed, and freely available. We are explicit about this boundary: completing our challenges proves practical skill, not certification.</p>
+			<div class="about-stats">
+				<div class="stat-box">
+					<span class="stat-label">Flags per mission</span>
+					<span class="stat-value">9+</span>
+				</div>
+				<div class="stat-box">
+					<span class="stat-label">Core tools</span>
+					<span class="stat-value">3</span>
+				</div>
+				<div class="stat-box">
+					<span class="stat-label">Lab access</span>
+					<span class="stat-value">24/7</span>
+				</div>
 			</div>
 		</div>
 	</section>
-
-	<footer class="footer-note">
-		Flag Forge
-	</footer>
-
 </body>
 </html>

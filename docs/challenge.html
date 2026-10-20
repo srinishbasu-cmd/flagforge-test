@@ -4,7 +4,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+	<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://github.com https://avatars.githubusercontent.com https://images.unsplash.com; connect-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
 	<meta name="description" content="Challenge details, README and lab launcher for Flag Forge.">
 	<title>Challenge · Flag Forge</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
@@ -13,6 +13,7 @@
 </head>
 
 <body class="challenge">
+	<div class="bg-grid"></div>
 
 	<!-- NAVBAR -->
 	<nav class="navbar">
@@ -22,7 +23,7 @@
 		</a>
 		<div class="nav-links">
 			<a href="index.html">Home</a>
-			<a href="challenges.html">Challenges</a>
+			<a href="challenges.html" class="active">Challenges</a>
 			<a href="members.html">Members</a>
 			<a href="apply.html">Apply</a>
 		</div>
@@ -31,9 +32,10 @@
 		</div>
 	</nav>
 
-	<div class="container challenge">
+	<!-- MAIN CONTAINER -->
+	<div class="container challenge" style="padding-top: 100px;">
 		<main id="app">
-			<p class="muted">Loading challenge…</p>
+			<p class="muted" style="color: var(--text-muted);">Loading challenge...</p>
 			<noscript><p>This page needs JavaScript to show the challenge and start its lab.</p></noscript>
 		</main>
 		<p class="footer-note">Labs run on your own machine and listen on 127.0.0.1 only. Nothing is attacked over the internet.</p>

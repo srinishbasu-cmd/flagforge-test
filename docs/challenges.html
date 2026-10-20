@@ -1,16 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="Challenges · Flag Forge">
 	<title>Challenges · Flag Forge</title>
 	<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
 	<link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+	<div class="bg-grid"></div>
 
 	<nav class="navbar">
 		<a href="index.html" class="nav-logo">
@@ -19,7 +17,7 @@
 		</a>
 		<div class="nav-links">
 			<a href="index.html">Home</a>
-			<a href="challenges.html" style="color: var(--text);">Challenges</a>
+			<a href="challenges.html" class="active">Challenges</a>
 			<a href="members.html">Members</a>
 			<a href="apply.html">Apply</a>
 		</div>
@@ -30,16 +28,15 @@
 
 	<header class="page-header">
 		<div class="container">
-			<h1>CTF Tracks</h1>
-			<p class="lead">Choose a learning path. Master the tools, then conquer the final challenge.</p>
+			<h1>Choose your side.</h1>
+			<p class="lead">Attack or defend. Each track is a sequence of hands-on missions.</p>
 		</div>
 	</header>
 
 	<main class="container landing-main">
 		
-		<!-- RED TEAM SECTION -->
 		<div class="category-header category-red">
-			<h2>Red Teaming / Penetration Testing</h2>
+			<h2>Red Teaming</h2>
 			<p>Offensive security, exploitation, and vulnerability discovery.</p>
 		</div>
 		<div class="challenge-grid">
@@ -48,31 +45,29 @@
 					<h3>Jr Penetration Testing</h3>
 					<span class="badge accent">Available</span>
 				</div>
-				<p class="card-desc">Master Burp Suite, Nmap, and Hydra to prepare for the ultimate practical exam. Includes tool-specific labs and a final CTF.</p>
+				<p class="card-desc">Burp Suite, Nmap and Hydra — the essentials of offensive security. Master the tools and conquer the final CTF.</p>
 				<div class="card-footer">
 					<span>4 Modules</span>
-					<span class="btn-primary small">View Track →</span>
+					<span class="btn-primary small">Enter track →</span>
 				</div>
 			</a>
 		</div>
 
-		<!-- BLUE TEAM SECTION -->
 		<div class="category-header category-blue">
-			<h2>Blue Teaming / SOC</h2>
+			<h2>Blue Teaming</h2>
 			<p>Defensive security, incident response, and threat hunting.</p>
 		</div>
 		<div class="challenge-grid">
 			<div class="challenge-card coming-soon">
 				<div class="card-header">
-					<h3>SOC Analyst Fundamentals</h3>
+					<h3>SOC Foundations</h3>
 					<span class="badge muted">Coming Soon</span>
 				</div>
-				<p class="card-desc">Log analysis, SIEM queries, and triage scenarios to build defensive muscle memory.</p>
+				<p class="card-desc">Follow the signals. Investigate suspicious activity, uncover attack patterns, and build your defensive instincts.</p>
 				<div class="card-footer"><span>In Development</span></div>
 			</div>
 		</div>
 
-		<!-- AI SECURITY SECTION -->
 		<div class="category-header category-ai">
 			<h2>AI Security</h2>
 			<p>Securing machine learning models and AI-driven applications.</p>
@@ -88,23 +83,6 @@
 			</div>
 		</div>
 
-		<!-- JOB SIMULATIONS SECTION -->
-		<div class="category-header category-jobs">
-			<h2>Job Simulations</h2>
-			<p>Full end-to-end engagements mirroring real-world tasks.</p>
-		</div>
-		<div class="challenge-grid">
-			<div class="challenge-card coming-soon">
-				<div class="card-header">
-					<h3>Full Penetration Test Simulation</h3>
-					<span class="badge muted">Coming Soon</span>
-				</div>
-				<p class="card-desc">A timed, multi-host environment requiring full reconnaissance, exploitation, and reporting.</p>
-				<div class="card-footer"><span>In Development</span></div>
-			</div>
-		</div>
-
 	</main>
-
 </body>
 </html>

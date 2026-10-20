@@ -38,7 +38,7 @@
 		if (s.includes("mac") || s.includes("iphone") || s.includes("ipad")) return "macos";
 		return "linux";
 	}
-	const OS_LABEL = { linux: "Linux", macos: "macOS", windows: "Windows" };
+	const OS_LABEL = { linux: "Linux", macos: "Mac", windows: "Windows" };
 
 	function installCommands(os) {
 		const f = CFG.launcher.fileNames[os];
@@ -49,14 +49,28 @@
 	}
 
 	function copyButton(text) {
-		const b = h("button", { type: "button", class: "btn small copy", text: "Copy" });
+		const b = h("button", { type: "button", class: "btn small copy", text: "Copy", style: "background:rgba(255,255,255,0.1); border:none; color:white; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" });
 		b.addEventListener("click", async () => {
-			try { await env.navigator.clipboard.writeText(text); b.textContent = "Copied"; } catch (_e) { b.textContent = "Press Ctrl+C"; }
+			try { await env.navigator.clipboard.writeText(text); b.textContent = "Copied!"; } catch (_e) { b.textContent = "Error"; }
 			if (env.setTimeout) env.setTimeout(() => { b.textContent = "Copy"; }, 1500);
 		});
 		return b;
 	}
-	const codeBox = (text) => h("div", { class: "codebox" }, h("pre", {}, h("code", { text })), copyButton(text));
+
+	// Terminal Style Code Box
+	function terminalBox(os) {
+		const cmds = installCommands(os);
+		const code = `curl -sSL https://flagforge.io/install.sh | bash\nflagforge login\nflagforge start burp-suite`;
+		return h("div", { style: "background:#000; border:1px solid rgba(255,255,255,0.1); border-radius:8px; overflow:hidden; margin-top:16px;" },
+			h("div", { style: "background:#0d1117; padding:8px 12px; display:flex; gap:6px; border-bottom:1px solid rgba(255,255,255,0.1);" },
+				h("div", { style: "width:10px; height:10px; border-radius:50%; background:#ff5f56;" }),
+				h("div", { style: "width:10px; height:10px; border-radius:50%; background:#ffbd2e;" }),
+				h("div", { style: "width:10px; height:10px; border-radius:50%; background:#27c93f;" }),
+				h("span", { text: "terminal", style: "color:#8b9bb4; font-size:0.75rem; margin-left:8px; font-family:var(--font-mono);" })
+			),
+			h("div", { style: "padding:16px; font-family:var(--font-mono); font-size:0.85rem; color:#e6edf3; line-height:1.6; overflow-x:auto; white-space:pre;" }, code)
+		);
+	}
 
 	const fmtLeft = (ms) => {
 		const m = Math.max(0, Math.floor(ms / 60000));
@@ -88,7 +102,8 @@
 		const hints = h("ul", {}, (b.hints || []).map((hi) => h("li", {}, h("span", { class: "hint-badge", text: hi.unlocksAfter }), " " + hi.text)));
 
 		return h("section", { class: "panel briefing", id: "briefing" },
-			h("h2", { text: "Briefing" }),
+			h("p", { style: "color:var(--accent); font-family:var(--font-mono); margin-bottom:8px;" }, "// briefing"),
+			h("h2", { text: "Burp Suite: Intercept Everything" }),
 			intro,
 			h("details", { class: "briefing-details" },
 				h("summary", { text: "Setup guide" }),
@@ -105,62 +120,55 @@
 		const storageKey = "ff_flags_" + lab.id;
 		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
 		
-		const input = h("input", { type: "text", placeholder: "FLAG{...}", class: "flag-input" });
-		const msg = h("div", { class: "flag-msg" });
-		const countText = h("span", { class: "flag-count", text: `${found.size} / ${lab.flags_list.length} Flags` });
-		const progressFill = h("div", { class: "flag-progress-fill", style: `width: ${(found.size / lab.flags_list.length) * 100}%` });
+		const input = h("input", { type: "text", placeholder: "FLAG{...}", style: "flex-grow:1; padding:16px; font-family:var(--font-mono); font-size:1rem; color:#fff; background:#000; border:1px solid rgba(255,255,255,0.1); border-radius:6px; outline:none; transition:border 0.3s;" });
+		const msg = h("div", { style: "margin-top:12px; font-size:0.9rem; font-weight:600; opacity:0; transition:opacity 0.3s;" });
+		const countText = h("span", { style: "font-family:var(--font-mono); font-size:0.9rem; color:var(--accent); font-weight:600;", text: `${found.size}/9 flags found` });
+		const progressFill = h("div", { style: `height:100%; background:var(--accent); width:${(found.size / lab.flags_list.length) * 100}%; transition:width 0.4s; box-shadow:0 0 10px var(--accent);` });
 
-		const submit = h("button", { type: "button", class: "btn primary", text: "Submit", style: "padding: 0 20px;" });
+		const submit = h("button", { type: "button", style: "background:var(--accent); color:#000; font-weight:800; padding:0 32px; border:none; border-radius:6px; cursor:pointer; font-size:1rem; transition:transform 0.2s;", text: "Submit flag" });
 		
 		function handleSubmit() {
 			const val = input.value.trim();
 			if (!val) return;
-
-			input.classList.remove("success-border", "error-border");
-			msg.classList.remove("show", "success", "error", "info");
+			msg.style.opacity = "0";
+			input.style.borderColor = "rgba(255,255,255,0.1)";
 			
-			if (found.has(val)) {
-				msg.textContent = "You already submitted this flag.";
-				msg.classList.add("show", "info");
-				return;
-			}
+			setTimeout(() => {
+				if (found.has(val)) {
+					msg.textContent = "You already submitted this flag.";
+					msg.style.color = "var(--text-muted)"; msg.style.opacity = "1";
+					return;
+				}
 
-			if (lab.flags_list.includes(val)) {
-				found.add(val);
-				localStorage.setItem(storageKey, JSON.stringify([...found]));
-				
-				countText.textContent = `${found.size} / ${lab.flags_list.length} Flags`;
-				progressFill.style.width = `${(found.size / lab.flags_list.length) * 100}%`;
-				
-				msg.textContent = found.size === lab.flags_list.length ? "🎉 Mission Complete! All flags found." : "✅ Correct! Flag accepted.";
-				msg.classList.add("show", "success");
-				
-				input.classList.add("success-border");
-				input.value = "";
-				setTimeout(() => input.classList.remove("success-border"), 2000);
-
-			} else {
-				msg.textContent = "❌ Incorrect flag. Keep trying.";
-				msg.classList.add("show", "error");
-				
-				input.classList.add("error-border");
-				setTimeout(() => input.classList.remove("error-border"), 2000);
-			}
+				if (lab.flags_list.includes(val)) {
+					found.add(val);
+					localStorage.setItem(storageKey, JSON.stringify([...found]));
+					countText.textContent = `${found.size}/9 flags found`;
+					progressFill.style.width = `${(found.size / lab.flags_list.length) * 100}%`;
+					msg.textContent = found.size === 9 ? "🎉 Mission Complete!" : "✅ Correct! Flag accepted.";
+					msg.style.color = "var(--accent)"; msg.style.opacity = "1";
+					input.style.borderColor = "var(--accent)";
+					input.value = "";
+				} else {
+					msg.textContent = "❌ Incorrect flag. Keep trying.";
+					msg.style.color = "var(--danger)"; msg.style.opacity = "1";
+					input.style.borderColor = "var(--danger)";
+				}
+			}, 100);
 		}
 
 		submit.addEventListener("click", handleSubmit);
 		input.addEventListener("keypress", (e) => { if (e.key === "Enter") handleSubmit(); });
+		input.addEventListener("focus", () => input.style.borderColor = "var(--accent)");
+		input.addEventListener("blur", () => { if(input.value==="") input.style.borderColor = "rgba(255,255,255,0.1)"; });
 
-		return h("div", { class: "inline-flag-panel" },
-			h("div", { class: "flag-header" },
-				h("h4", { text: "Submit Flag" }),
+		return h("div", { style: "margin-top:24px; padding:24px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px;" },
+			h("div", { style: "display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;" },
+				h("h4", { text: "Mission 1: Setup & Recon", style: "margin:0; font-size:1.2rem;" }),
 				countText
 			),
-			h("div", { class: "flag-progress-bar" }, progressFill),
-			h("div", { class: "flag-form" },
-				input,
-				submit
-			),
+			h("div", { style: "height:4px; background:rgba(255,255,255,0.1); border-radius:99px; margin-bottom:16px; overflow:hidden;" }, progressFill),
+			h("div", { style: "display:flex; gap:12px;" }, input, submit),
 			msg
 		);
 	}
@@ -198,22 +206,18 @@
 	}
 
 	function asidePanels(ch, os) {
-		const cmds = installCommands(os);
 		const osButtons = Object.keys(OS_LABEL).map((k) =>
-			h("a", { class: "btn small" + (k === os ? " primary" : ""), href: CFG.launcher.downloads[k], rel: "noopener", text: OS_LABEL[k] }));
+			h("a", { class: "btn small" + (k === os ? " primary" : ""), href: CFG.launcher.downloads[k], rel: "noopener", text: OS_LABEL[k], style: "flex-grow:1; text-align:center;" }));
+		
 		return [
-			h("section", { class: "panel", id: "get-launcher" },
-				h("h2", { text: "Get the launcher" }),
-				h("p", { class: "muted", text: "A small app that downloads the lab from GitHub and runs it with Docker on your own machine." }),
-				h("div", { class: "row" }, osButtons),
-				h("p", { class: "small muted", text: "After downloading, run the install command for " + OS_LABEL[os] + ":" }),
-				codeBox(cmds.firefox),
-				h("p", { class: "small muted", text: "Chrome, Edge or Brave need the extension ID:" }),
-				codeBox(cmds.chrome),
-				h("p", { class: "small muted" }, h("a", { href: CFG.launcher.releasesPage, target: "_blank", rel: "noopener noreferrer", text: "All releases and checksums on GitHub" }))),
-			h("section", { class: "panel", id: "get-extension" },
-				h("h2", { text: "Browser extension" }),
-				h("p", { class: "muted", text: "Lets this page start and stop labs. It only works on this website." }),
+			h("section", { class: "panel", style: "background:transparent; border:none; padding:0;" },
+				h("h2", { text: "Get the launcher", style: "font-size:1.2rem;" }),
+				h("p", { class: "muted", text: "Spin up your lab in seconds." }),
+				h("div", { class: "row", style: "display:flex; gap:8px; margin-bottom:8px;" }, osButtons),
+				terminalBox(os)
+			),
+			h("section", { class: "panel", style: "background:transparent; border:none; padding:0; margin-top:24px;" },
+				h("h2", { text: "Browser extension", style: "font-size:1.2rem;" }),
 				h("div", { class: "row" }, extLink("Firefox", CFG.extension.firefox), extLink("Chrome / Edge / Brave", CFG.extension.chrome)),
 				h("p", { class: "small muted", text: "Firefox may show \u201cprevented this site from asking you to install software\u201d. Click Allow, then Add." })),
 		];
@@ -239,14 +243,9 @@
 		const s = ctl.state.setup;
 		const stat = (v) => (v === "ok" ? "ok" : v === "missing" || v === "bad" ? "bad" : v === "checking" ? "wait" : "idle");
 		const items = [];
-		items.push(check(stat(s.ext), "Browser extension",
-			s.ext === "ok" ? "Detected" : s.ext === "checking" ? "Checking…" : s.reload ? "The extension was reloaded. Reload this page." : "Not detected. Install it from the sidebar, then press Check again."));
-		items.push(check(stat(s.host), "Launcher app",
-			s.host === "ok" ? "Connected" + (s.launcherVersion ? " (v" + s.launcherVersion + ")" : "") : s.host === "checking" ? "Checking…" : s.host === "missing" ? "Not found. Download it from the sidebar and run its install command." : "Waiting for the extension.",
-			s.host === "missing" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
-		items.push(check(stat(s.docker), "Docker",
-			s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting for the launcher.",
-			s.docker === "bad" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
+		items.push(check(stat(s.ext), "Browser extension", s.ext === "ok" ? "Detected" : s.ext === "checking" ? "Checking…" : s.reload ? "The extension was reloaded. Reload this page." : "Not detected. Install it from the sidebar, then press Check again."));
+		items.push(check(stat(s.host), "Launcher app", s.host === "ok" ? "Connected" + (s.launcherVersion ? " (v" + s.launcherVersion + ")" : "") : s.host === "checking" ? "Checking…" : s.host === "missing" ? "Not found. Download it from the sidebar and run its install command." : "Waiting for the extension.", s.host === "missing" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
+		items.push(check(stat(s.docker), "Docker", s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting for the launcher.", s.docker === "bad" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
 		return h("ol", { class: "checklist" }, items);
 	}
 
@@ -257,8 +256,7 @@
 		
 		if (L.status === "starting") {
 			const p = L.progress || {};
-			const bar = h("div", { class: "progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": p.percent != null ? p.percent : null },
-				h("i", { class: p.percent == null ? "indeterminate" : "" }));
+			const bar = h("div", { class: "progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": p.percent != null ? p.percent : null }, h("i", { class: p.percent == null ? "indeterminate" : "" }));
 			if (p.percent != null) bar.firstChild.style.width = p.percent + "%";
 			controls = h("div", { class: "mission-state" }, bar, h("div", { class: "hint", text: p.message || "Starting…" }));
 		} else if (L.status === "stopping") {
@@ -266,19 +264,14 @@
 		} else if (L.status === "running") {
 			const mainUrl = (L.urls || []).find(u => u.link) || (L.urls && L.urls[0]);
 			const otherUrls = (L.urls || []).filter(u => u !== mainUrl);
-
 			controls = h("div", { class: "mission-state" },
 				h("div", { class: "row", style: "justify-content: flex-end; margin-top: 0;" },
 					mainUrl && mainUrl.link ? h("a", { class: "btn small primary", href: mainUrl.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + mainUrl.name }) : null,
 					h("span", { class: "hint", "data-expires": L.expiresAt, text: fmtLeft(L.expiresAt - Date.now()) })),
-				
 				otherUrls.length > 0 ? h("details", { class: "dev-links" },
 					h("summary", { class: "hint", text: "Show all lab services (Dev Mode)" }),
-					h("div", { class: "row", style: "justify-content: flex-end; margin: 4px 0 0;" },
-						otherUrls.map(u => u.link ? h("a", { class: "btn small", href: u.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + u.name }) : null)
-					)
+					h("div", { class: "row", style: "justify-content: flex-end; margin: 4px 0 0;" }, otherUrls.map(u => u.link ? h("a", { class: "btn small", href: u.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + u.name }) : null))
 				) : null,
-
 				h("div", { class: "row", style: "justify-content: flex-end; margin-top: 8px;" },
 					h("button", { type: "button", class: "btn small", text: "+1 hour", onclick: () => ctl.extend(lab.id, 1) }),
 					h("button", { type: "button", class: "btn small danger", text: "Stop lab", onclick: () => ctl.stop(lab.id) })));
@@ -287,15 +280,9 @@
 		}
 
 		const chip = L.status === "running" ? h("span", { class: "badge accent", text: "Running" }) : null;
-		
 		const extraSections = [];
 		if (L.status === "running" && lab.objectives) {
-			extraSections.push(
-				h("div", { class: "mission-objectives" },
-					h("h4", { text: "Objectives" }),
-					h("ol", {}, lab.objectives.map(o => h("li", {}, h("strong", { text: o.n + ". " + o.title }), " — " + o.task)))
-				)
-			);
+			extraSections.push(h("div", { class: "mission-objectives" }, h("h4", { text: "Objectives" }), h("ol", {}, lab.objectives.map(o => h("li", {}, h("strong", { text: o.n + ". " + o.title }), " — " + o.task)))));
 		}
 		if (L.status === "running" && lab.flags_list) {
 			extraSections.push(inlineFlagPanel(lab));
@@ -342,15 +329,7 @@
 	}
 
 	function comingSoonPanel() {
-		return h("section", { class: "panel", id: "launch" }, h("h2", { text: "Launch the lab" }),
-			h("p", { text: "This challenge is not ready yet. Check back soon." }));
-	}
-
-	function crumbs(ch, track) {
-		return h("nav", { class: "crumbs", "aria-label": "Breadcrumb" },
-			h("a", { href: "index.html", text: "Flag Forge" }), h("span", { "aria-hidden": "true", text: "/" }),
-			track ? [h("a", { href: track.page, text: track.title }), h("span", { "aria-hidden": "true", text: "/" })] : null,
-			h("span", { "aria-current": "page", text: ch.title }));
+		return h("section", { class: "panel", id: "launch" }, h("h2", { text: "Launch the lab" }), h("p", { text: "This challenge is not ready yet. Check back soon." }));
 	}
 
 	function renderChallenge(ch, data, ctlFactory) {
@@ -360,7 +339,6 @@
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
-		// Breadcrumbs (crumbs) have been removed from the page assembly here
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
 			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
