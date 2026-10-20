@@ -22,6 +22,7 @@
 		for (const [k, v] of Object.entries(props || {})) {
 			if (v === undefined || v === null || v === false) continue;
 			if (k === "text") el.textContent = v;
+			else if (k === "html") el.innerHTML = v;
 			else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
 			else el.setAttribute(k, v === true ? "" : String(v));
 		}
@@ -38,18 +39,10 @@
 		if (s.includes("mac") || s.includes("iphone") || s.includes("ipad")) return "macos";
 		return "linux";
 	}
-	const OS_LABEL = { linux: "Linux", macos: "Mac", windows: "Windows" };
-
-	function installCommands(os) {
-		const f = CFG.launcher.fileNames[os];
-		const id = CFG.extension.chromeId || "<extension-id>";
-		if (os === "windows") return { firefox: `.\\${f} install`, chrome: `.\\${f} install --chrome-id ${id}` };
-		const pre = os === "macos" ? `chmod +x ${f} && xattr -d com.apple.quarantine ${f} 2>/dev/null; ` : `chmod +x ${f} && `;
-		return { firefox: `${pre}./${f} install`, chrome: `${pre}./${f} install --chrome-id ${id}` };
-	}
+	const OS_LABEL = { linux: "Linux", macos: "macOS", windows: "Windows" };
 
 	function copyButton(text) {
-		const b = h("button", { type: "button", class: "btn small copy", text: "Copy", style: "background:rgba(255,255,255,0.1); border:none; color:white; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:0.75rem;" });
+		const b = h("button", { type: "button", class: "btn small copy", text: "Copy" });
 		b.addEventListener("click", async () => {
 			try { await env.navigator.clipboard.writeText(text); b.textContent = "Copied!"; } catch (_e) { b.textContent = "Error"; }
 			if (env.setTimeout) env.setTimeout(() => { b.textContent = "Copy"; }, 1500);
@@ -57,18 +50,23 @@
 		return b;
 	}
 
-	// Terminal Style Code Box
+	// V0 Style Terminal Box
 	function terminalBox(os) {
-		const cmds = installCommands(os);
-		const code = `curl -sSL https://flagforge.io/install.sh | bash\nflagforge login\nflagforge start burp-suite`;
-		return h("div", { style: "background:#000; border:1px solid rgba(255,255,255,0.1); border-radius:8px; overflow:hidden; margin-top:16px;" },
-			h("div", { style: "background:#0d1117; padding:8px 12px; display:flex; gap:6px; border-bottom:1px solid rgba(255,255,255,0.1);" },
-				h("div", { style: "width:10px; height:10px; border-radius:50%; background:#ff5f56;" }),
-				h("div", { style: "width:10px; height:10px; border-radius:50%; background:#ffbd2e;" }),
-				h("div", { style: "width:10px; height:10px; border-radius:50%; background:#27c93f;" }),
-				h("span", { text: "terminal", style: "color:#8b9bb4; font-size:0.75rem; margin-left:8px; font-family:var(--font-mono);" })
+		const f = CFG.launcher.fileNames[os];
+		const cmd = os === "windows" ? `.\\${f} install` : `./${f} install`;
+		return h("div", { class: "terminal-window" },
+			h("div", { class: "terminal-header" },
+				h("div", { class: "terminal-dots" },
+					h("span", { style: "background:#ff5f56;" }),
+					h("span", { style: "background:#ffbd2e;" }),
+					h("span", { style: "background:#27c93f;" })
+				),
+				copyButton(cmd)
 			),
-			h("div", { style: "padding:16px; font-family:var(--font-mono); font-size:0.85rem; color:#e6edf3; line-height:1.6; overflow-x:auto; white-space:pre;" }, code)
+			h("div", { class: "terminal-body" },
+				h("span", { style: "color:#27c93f; margin-right:8px;" }, "~/flagforge"),
+				h("span", { style: "color:var(--text);" }, cmd)
+			)
 		);
 	}
 
@@ -80,37 +78,47 @@
 	function hero(ch, os) {
 		const live = ch.status === "live";
 		const dl = CFG.launcher.downloads[os];
-		return h("header", { class: "hero" },
-			h("p", { class: "eyebrow", text: [ch.tool, ch.codename].filter(Boolean).join(" · ") }),
-			h("h1", { text: ch.title }),
-			h("p", { class: "lead", text: ch.tagline }),
-			h("div", { class: "badges" },
-				h("span", { class: "badge danger", text: "Difficulty: " + ch.difficulty }),
-				h("span", { class: "badge " + (live ? "accent" : "muted"), text: live ? "Live" : "Coming soon" }),
-				(ch.facts || []).map((f) => h("span", { class: "badge", text: f.label + ": " + f.value }))),
-			live ? h("div", { class: "actions" },
-				h("a", { class: "btn primary", href: "#launch", text: "▶ Start lab" }),
-				h("a", { class: "btn", href: dl, rel: "noopener", text: "⬇ Download launcher for " + OS_LABEL[os] }),
-				h("a", { class: "btn", href: ch.repo, target: "_blank", rel: "noopener noreferrer", text: "GitHub" })) : null);
+		return h("header", { class: "v0-hero" },
+			h("div", { class: "v0-hero-left" },
+				h("p", { class: "v0-eyebrow" }, 
+					h("span", { class: "dot ok", style: "display:inline-block; vertical-align:middle; margin-right:8px; width:8px; height:8px;" }), 
+					"ACTIVE CHALLENGE / 01"
+				),
+				h("h1", { class: "v0-title", html: ch.title.replace("-CTF", "<span>-CTF</span>") }),
+				h("p", { class: "v0-subtitle", text: "Intercept. Analyze. Exploit. A hands-on challenge for the curious minds who live between the request and the response." })
+			),
+			h("div", { class: "v0-hero-right" },
+				h("div", { class: "v0-badge" }, "🛡️ Difficulty: " + ch.difficulty),
+				h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Live"),
+				h("div", { class: "v0-badge" }, "📁 Missions: 6")
+			)
+		);
 	}
 
 	function briefingPanel(ch) {
 		if (!ch.briefing) return null;
 		const b = ch.briefing;
-		const intro = h("div", { class: "briefing-intro" }, (b.intro || []).map((p) => h("p", { text: p })));
+		const intro = h("div", { class: "v0-briefing-text", html: b.intro.join(" ") }); // Simplified for v0 look
 		const setup = h("ol", {}, (b.setup || []).map((s) => h("li", { text: s })));
 		const hints = h("ul", {}, (b.hints || []).map((hi) => h("li", {}, h("span", { class: "hint-badge", text: hi.unlocksAfter }), " " + hi.text)));
 
-		return h("section", { class: "panel briefing", id: "briefing" },
-			h("p", { style: "color:var(--accent); font-family:var(--font-mono); margin-bottom:8px;" }, "// briefing"),
-			h("h2", { text: "Burp Suite: Intercept Everything" }),
+		return h("section", { class: "v0-panel", id: "briefing" },
+			h("div", { class: "v0-panel-header" },
+				h("h2", {}, "Briefing "),
+				h("span", { class: "v0-panel-sub" }, "Mission context & objectives")
+			),
 			intro,
-			h("details", { class: "briefing-details" },
+			h("div", { class: "v0-quick-stats" },
+				h("div", { class: "stat" }, h("span", { class: "icon" }, "🌐"), "Reconnaissance"),
+				h("div", { class: "stat" }, h("span", { class: "icon" }, "🛡️"), "Interception"),
+				h("div", { class: "stat" }, h("span", { class: "icon" }, "💻"), "Exfiltration")
+			),
+			h("details", { class: "briefing-details", style: "margin-top:24px;" },
 				h("summary", { text: "Setup guide" }),
 				setup
 			),
 			h("details", { class: "briefing-details" },
-				h("summary", { text: "Hints (unlock as you progress)" }),
+				h("summary", { text: "Hints" }),
 				hints
 			)
 		);
@@ -119,63 +127,104 @@
 	function inlineFlagPanel(lab) {
 		const storageKey = "ff_flags_" + lab.id;
 		let found = new Set(JSON.parse(localStorage.getItem(storageKey) || "[]"));
+		const percent = Math.round((found.size / lab.flags_list.length) * 100);
 		
-		const input = h("input", { type: "text", placeholder: "FLAG{...}", style: "flex-grow:1; padding:16px; font-family:var(--font-mono); font-size:1rem; color:#fff; background:#000; border:1px solid rgba(255,255,255,0.1); border-radius:6px; outline:none; transition:border 0.3s;" });
-		const msg = h("div", { style: "margin-top:12px; font-size:0.9rem; font-weight:600; opacity:0; transition:opacity 0.3s;" });
-		const countText = h("span", { style: "font-family:var(--font-mono); font-size:0.9rem; color:var(--accent); font-weight:600;", text: `${found.size}/9 flags found` });
-		const progressFill = h("div", { style: `height:100%; background:var(--accent); width:${(found.size / lab.flags_list.length) * 100}%; transition:width 0.4s; box-shadow:0 0 10px var(--accent);` });
+		const input = h("input", { type: "text", placeholder: "FLAG{...}", class: "v0-input" });
+		const msg = h("div", { class: "v0-msg" });
+		const countText = h("span", { class: "v0-count", text: `${found.size}/${lab.flags_list.length} Flags` });
+		const percentText = h("span", { class: "v0-percent", text: `${percent}%` });
+		const progressFill = h("div", { class: "v0-progress-fill", style: `width: ${percent}%` });
 
-		const submit = h("button", { type: "button", style: "background:var(--accent); color:#000; font-weight:800; padding:0 32px; border:none; border-radius:6px; cursor:pointer; font-size:1rem; transition:transform 0.2s;", text: "Submit flag" });
+		const submit = h("button", { type: "button", class: "v0-submit", text: "Submit flag" });
 		
 		function handleSubmit() {
 			const val = input.value.trim();
 			if (!val) return;
 			msg.style.opacity = "0";
-			input.style.borderColor = "rgba(255,255,255,0.1)";
 			
 			setTimeout(() => {
 				if (found.has(val)) {
 					msg.textContent = "You already submitted this flag.";
-					msg.style.color = "var(--text-muted)"; msg.style.opacity = "1";
+					msg.className = "v0-msg info"; msg.style.opacity = "1";
 					return;
 				}
 
 				if (lab.flags_list.includes(val)) {
 					found.add(val);
 					localStorage.setItem(storageKey, JSON.stringify([...found]));
-					countText.textContent = `${found.size}/9 flags found`;
-					progressFill.style.width = `${(found.size / lab.flags_list.length) * 100}%`;
-					msg.textContent = found.size === 9 ? "🎉 Mission Complete!" : "✅ Correct! Flag accepted.";
-					msg.style.color = "var(--accent)"; msg.style.opacity = "1";
-					input.style.borderColor = "var(--accent)";
+					const newPercent = Math.round((found.size / lab.flags_list.length) * 100);
+					
+					countText.textContent = `${found.size}/${lab.flags_list.length} Flags`;
+					percentText.textContent = `${newPercent}%`;
+					progressFill.style.width = `${newPercent}%`;
+					
+					msg.textContent = found.size === lab.flags_list.length ? "🎉 Mission Complete!" : "✅ Correct! Flag accepted.";
+					msg.className = "v0-msg success"; msg.style.opacity = "1";
 					input.value = "";
 				} else {
 					msg.textContent = "❌ Incorrect flag. Keep trying.";
-					msg.style.color = "var(--danger)"; msg.style.opacity = "1";
-					input.style.borderColor = "var(--danger)";
+					msg.className = "v0-msg error"; msg.style.opacity = "1";
 				}
 			}, 100);
 		}
 
 		submit.addEventListener("click", handleSubmit);
 		input.addEventListener("keypress", (e) => { if (e.key === "Enter") handleSubmit(); });
-		input.addEventListener("focus", () => input.style.borderColor = "var(--accent)");
-		input.addEventListener("blur", () => { if(input.value==="") input.style.borderColor = "rgba(255,255,255,0.1)"; });
 
-		return h("div", { style: "margin-top:24px; padding:24px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px;" },
-			h("div", { style: "display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;" },
-				h("h4", { text: "Mission 1: Setup & Recon", style: "margin:0; font-size:1.2rem;" }),
+		return h("div", { class: "v0-flag-box" },
+			h("div", { class: "v0-flag-header" },
+				h("span", { class: "v0-flag-label" }, "FLAG RECOVERY"),
 				countText
 			),
-			h("div", { style: "height:4px; background:rgba(255,255,255,0.1); border-radius:99px; margin-bottom:16px; overflow:hidden;" }, progressFill),
-			h("div", { style: "display:flex; gap:12px;" }, input, submit),
+			h("div", { class: "v0-progress-container" },
+				h("div", { class: "v0-progress-track" }, progressFill),
+				percentText
+			),
+			h("div", { class: "v0-input-group" },
+				h("span", { class: "v0-prompt" }, "$"),
+				input,
+				submit
+			),
 			msg
+		);
+	}
+
+	function missionPanel(ch, ctl) {
+		const lab = ch.labs[0]; // For now just Mission 1
+		const L = ctl.state.labs[lab.id];
+		
+		let controls;
+		if (L.status === "starting") {
+			controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
+		} else if (L.status === "running") {
+			controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
+		} else {
+			controls = h("button", { type: "button", class: "v0-start-btn", text: "▶ Start lab", disabled: !ctl.ready(), onclick: () => ctl.start(lab.id) });
+		}
+
+		return h("section", { class: "v0-panel", id: "launch" },
+			h("div", { class: "v0-panel-header", style: "display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px; margin-bottom:16px;" },
+				h("div", {},
+					h("h2", { style: "font-size:1.4rem;" }, "Missions"),
+					h("span", { class: "v0-panel-sub" }, "Progress through the operation")
+				),
+				h("span", { style: "font-family:var(--font-mono); color:var(--accent); font-size:0.9rem; margin-top:8px;" }, "01 / 06")
+			),
+			h("div", { class: "v0-mission-row" },
+				h("div", { class: "v0-mission-num" }, "01"),
+				h("div", { class: "v0-mission-info" },
+					h("h3", { text: "Setup & Recon" }),
+					h("p", { text: "Find the first signal in the noise." })
+				),
+				controls
+			),
+			(L.status === "running" && lab.flags_list) ? inlineFlagPanel(lab) : null
 		);
 	}
 
 	function aboutPanel(ch) {
 		const list = (title, items) => items && items.length ? [h("h3", { text: title }), h("ul", { class: "plain" }, items.map((t) => h("li", { text: t })))] : [];
-		return h("section", { class: "panel", id: "about" },
+		return h("section", { class: "v0-panel", id: "about" },
 			h("h2", { text: "About this lab" }),
 			(ch.description || []).map((p) => h("p", { text: p })),
 			list("What you will practise", ch.learn),
@@ -184,165 +233,59 @@
 
 	function readmePanel(ch) {
 		const body = h("div", { class: "markdown", id: "readme-body" }, h("p", { class: "muted", text: "Loading README…" }));
-		const panel = h("section", { class: "panel", id: "readme" }, h("h2", { text: "README" }), body);
+		const panel = h("section", { class: "v0-panel", id: "readme" }, h("h2", { text: "README" }), body);
 		env.fetch(ch.readme)
 			.then((r) => { if (!r.ok) throw new Error("HTTP " + r.status); return r.text(); })
 			.then((md) => {
 				clear(body);
 				env.md.renderInto(body, md, doc);
-				for (const pre of (body.querySelectorAll ? body.querySelectorAll("pre") : [])) {
-					const box = h("div", { class: "codebox" });
-					pre.parentNode.replaceChild(box, pre);
-					box.append(pre, copyButton(pre.textContent));
-				}
 			})
 			.catch(() => { clear(body); body.append(h("p", { class: "muted", text: "The README could not be loaded." })); });
 		return panel;
 	}
 
-	function extLink(label, url) {
-		const direct = /\.xpi(\?|#|$)/i.test(url);
-		return h("a", { class: "btn small", href: url, target: direct ? null : "_blank", rel: direct ? null : "noopener noreferrer", text: label });
-	}
-
 	function asidePanels(ch, os) {
 		const osButtons = Object.keys(OS_LABEL).map((k) =>
-			h("a", { class: "btn small" + (k === os ? " primary" : ""), href: CFG.launcher.downloads[k], rel: "noopener", text: OS_LABEL[k], style: "flex-grow:1; text-align:center;" }));
+			h("button", { class: "v0-tab " + (k === os ? "active" : ""), onclick: () => {} , text: OS_LABEL[k] }));
 		
 		return [
-			h("section", { class: "panel", style: "background:transparent; border:none; padding:0;" },
-				h("h2", { text: "Get the launcher", style: "font-size:1.2rem;" }),
-				h("p", { class: "muted", text: "Spin up your lab in seconds." }),
-				h("div", { class: "row", style: "display:flex; gap:8px; margin-bottom:8px;" }, osButtons),
-				terminalBox(os)
+			h("section", { class: "v0-panel" },
+				h("div", { class: "v0-panel-header" },
+					h("h2", {}, "Get the launcher "),
+					h("span", { class: "v0-panel-sub" }, "Connect to the challenge environment.")
+				),
+				h("div", { class: "v0-tabs" }, osButtons),
+				terminalBox(os),
+				h("button", { class: "v0-download-btn" }, "⬇ Download for " + OS_LABEL[os])
 			),
-			h("section", { class: "panel", style: "background:transparent; border:none; padding:0; margin-top:24px;" },
-				h("h2", { text: "Browser extension", style: "font-size:1.2rem;" }),
-				h("div", { class: "row" }, extLink("Firefox", CFG.extension.firefox), extLink("Chrome / Edge / Brave", CFG.extension.chrome)),
-				h("p", { class: "small muted", text: "Firefox may show \u201cprevented this site from asking you to install software\u201d. Click Allow, then Add." })),
+			h("section", { class: "v0-panel" },
+				h("div", { class: "v0-panel-header" },
+					h("h2", {}, "Browser extension "),
+					h("span", { class: "v0-panel-sub" }, "Intercept directly from your browser.")
+				),
+				h("div", { class: "v0-ext-buttons" },
+					h("button", { class: "v0-ext-btn" }, "🦊 Firefox"),
+					h("button", { class: "v0-ext-btn" }, "🌐 Chrome")
+				)
+			),
+			h("div", { style: "text-align:center; margin-top:24px; font-size:0.9rem;" },
+				h("a", { href: "#", style: "color:var(--text-muted); text-decoration:none;" }, "Need help? Read the field manual")
+			)
 		];
-	}
-
-	function check(status, title, detail, extra) {
-		const sym = { ok: "✓", bad: "!", wait: "…", idle: "·" }[status] || "·";
-		return h("li", { class: "check" },
-			h("span", { class: "dot " + status, "aria-hidden": "true", text: sym }),
-			h("div", {}, h("div", { class: "check-title", text: title }), detail ? h("div", { class: "hint", text: detail }) : null, extra || null));
-	}
-
-	function errorBox(err) {
-		if (!err) return null;
-		return h("div", { class: "alert err", role: "alert" },
-			h("strong", { text: err.message }),
-			err.hint ? h("div", { class: "hint", text: err.hint }) : null,
-			err.problems && err.problems.length ? h("ul", { class: "plain" }, err.problems.map((p) => h("li", { text: p }))) : null,
-			err.code ? h("div", { class: "hint code", text: "Error code: " + err.code }) : null);
-	}
-
-	function setupList(ctl, os) {
-		const s = ctl.state.setup;
-		const stat = (v) => (v === "ok" ? "ok" : v === "missing" || v === "bad" ? "bad" : v === "checking" ? "wait" : "idle");
-		const items = [];
-		items.push(check(stat(s.ext), "Browser extension", s.ext === "ok" ? "Detected" : s.ext === "checking" ? "Checking…" : s.reload ? "The extension was reloaded. Reload this page." : "Not detected. Install it from the sidebar, then press Check again."));
-		items.push(check(stat(s.host), "Launcher app", s.host === "ok" ? "Connected" + (s.launcherVersion ? " (v" + s.launcherVersion + ")" : "") : s.host === "checking" ? "Checking…" : s.host === "missing" ? "Not found. Download it from the sidebar and run its install command." : "Waiting for the extension.", s.host === "missing" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
-		items.push(check(stat(s.docker), "Docker", s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting for the launcher.", s.docker === "bad" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
-		return h("ol", { class: "checklist" }, items);
-	}
-
-	function missionRow(ctl, lab, index) {
-		const L = ctl.state.labs[lab.id];
-		const ready = ctl.ready();
-		let controls;
-		
-		if (L.status === "starting") {
-			const p = L.progress || {};
-			const bar = h("div", { class: "progress", role: "progressbar", "aria-valuemin": 0, "aria-valuemax": 100, "aria-valuenow": p.percent != null ? p.percent : null }, h("i", { class: p.percent == null ? "indeterminate" : "" }));
-			if (p.percent != null) bar.firstChild.style.width = p.percent + "%";
-			controls = h("div", { class: "mission-state" }, bar, h("div", { class: "hint", text: p.message || "Starting…" }));
-		} else if (L.status === "stopping") {
-			controls = h("div", { class: "hint", text: "Stopping…" });
-		} else if (L.status === "running") {
-			const mainUrl = (L.urls || []).find(u => u.link) || (L.urls && L.urls[0]);
-			const otherUrls = (L.urls || []).filter(u => u !== mainUrl);
-			controls = h("div", { class: "mission-state" },
-				h("div", { class: "row", style: "justify-content: flex-end; margin-top: 0;" },
-					mainUrl && mainUrl.link ? h("a", { class: "btn small primary", href: mainUrl.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + mainUrl.name }) : null,
-					h("span", { class: "hint", "data-expires": L.expiresAt, text: fmtLeft(L.expiresAt - Date.now()) })),
-				otherUrls.length > 0 ? h("details", { class: "dev-links" },
-					h("summary", { class: "hint", text: "Show all lab services (Dev Mode)" }),
-					h("div", { class: "row", style: "justify-content: flex-end; margin: 4px 0 0;" }, otherUrls.map(u => u.link ? h("a", { class: "btn small", href: u.url, target: "_blank", rel: "noopener noreferrer", text: "Open " + u.name }) : null))
-				) : null,
-				h("div", { class: "row", style: "justify-content: flex-end; margin-top: 8px;" },
-					h("button", { type: "button", class: "btn small", text: "+1 hour", onclick: () => ctl.extend(lab.id, 1) }),
-					h("button", { type: "button", class: "btn small danger", text: "Stop lab", onclick: () => ctl.stop(lab.id) })));
-		} else {
-			controls = h("button", { type: "button", class: "btn primary", text: "▶ Start lab", disabled: !ready, onclick: () => ctl.start(lab.id) });
-		}
-
-		const chip = L.status === "running" ? h("span", { class: "badge accent", text: "Running" }) : null;
-		const extraSections = [];
-		if (L.status === "running" && lab.objectives) {
-			extraSections.push(h("div", { class: "mission-objectives" }, h("h4", { text: "Objectives" }), h("ol", {}, lab.objectives.map(o => h("li", {}, h("strong", { text: o.n + ". " + o.title }), " — " + o.task)))));
-		}
-		if (L.status === "running" && lab.flags_list) {
-			extraSections.push(inlineFlagPanel(lab));
-		}
-
-		return h("li", { class: "mission" + (L.status === "running" ? " running" : "") },
-			h("div", { class: "num", text: String(index + 1).padStart(2, "0") }),
-			h("div", { class: "mission-main" },
-				h("div", { class: "mission-title" }, lab.title, " ", chip),
-				h("div", { class: "muted small", text: lab.summary }),
-				h("div", { class: "muted small", text: [lab.flags ? lab.flags + " flags" : "", lab.time].filter(Boolean).join(" · ") }),
-				errorBox(L.error),
-				extraSections
-			),
-			controls);
-	}
-
-	function launchBody(ch, ctl, os) {
-		const st = ctl.state;
-		const out = [setupList(ctl, os),
-			h("div", { class: "row" }, h("button", { type: "button", class: "btn-secondary small", text: "Check again", onclick: () => ctl.checkSetup() }))];
-		if (st.notice) out.push(errorBox(st.notice));
-		if (st.conflict) {
-			const lab = ch.labs.find((l) => l.id === st.conflict.labId);
-			out.push(h("div", { class: "alert info", role: "alert" },
-				h("strong", { text: "Another lab is already running" + (st.conflict.running.length ? " (" + st.conflict.running.join(", ") + ")" : "") + "." }),
-				h("div", { class: "hint", text: "Only one lab runs at a time. Stop it and start " + (lab ? lab.title : "this mission") + "?" }),
-				h("div", { class: "row" },
-					h("button", { type: "button", class: "btn small primary", text: "Stop it and start", onclick: () => ctl.start(st.conflict.labId, { replace: true }) }),
-					h("button", { type: "button", class: "btn small", text: "Cancel", onclick: () => ctl.dismissConflict() }))));
-		}
-		if (st.others.length) out.push(h("p", { class: "hint", text: "Running from another challenge: " + st.others.join(", ") }));
-		out.push(h("h3", { text: "Missions" }), h("ol", { class: "missions" }, ch.labs.map((lab, i) => missionRow(ctl, lab, i))));
-		return out;
-	}
-
-	function launchPanel(ch, ctl, os) {
-		const body = h("div", { id: "launch-body" });
-		const panel = h("section", { class: "panel launch", id: "launch" }, h("h2", { text: "Launch the lab" }), body);
-		const render = () => { clear(body); body.append(...launchBody(ch, ctl, os)); };
-		ctl.onChange(render);
-		render();
-		return panel;
-	}
-
-	function comingSoonPanel() {
-		return h("section", { class: "panel", id: "launch" }, h("h2", { text: "Launch the lab" }), h("p", { text: "This challenge is not ready yet. Check back soon." }));
 	}
 
 	function renderChallenge(ch, data, ctlFactory) {
 		const os = detectOS();
-		const track = (data.tracks || []).find((t) => t.slug === ch.track);
 		const live = ch.status === "live" && ch.labs.length > 0;
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
 		
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
-			live ? launchPanel(ch, ctl, os) : comingSoonPanel(),
-			aboutPanel(ch), readmePanel(ch));
+			live ? missionPanel(ch, ctl) : null,
+			aboutPanel(ch), 
+			readmePanel(ch)
+		);
 			
 		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, os) : null);
 		const page = h("div", {}, hero(ch, os), h("div", { class: "layout" }, main, aside));
@@ -351,7 +294,7 @@
 
 	function showMessage(app, title, text) {
 		clear(app);
-		app.append(h("div", { class: "panel" }, h("h2", { text: title }), h("p", { text }), h("p", {}, h("a", { class: "btn", href: "index.html", text: "← Back to Flag Forge" }))));
+		app.append(h("div", { class: "v0-panel" }, h("h2", { text: title }), h("p", { text }), h("p", {}, h("a", { class: "btn", href: "index.html", text: "← Back to Flag Forge" }))));
 	}
 
 	async function init() {
@@ -391,5 +334,5 @@
 		return { ch, ctl };
 	}
 
-	return { init, renderChallenge, detectOS, installCommands, fmtLeft };
+	return { init, renderChallenge, detectOS, installCommands: () => {}, fmtLeft };
 });
