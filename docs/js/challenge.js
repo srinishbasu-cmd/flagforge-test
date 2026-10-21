@@ -233,7 +233,26 @@
 				if (L.status === "starting") {
 					controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
 				} else if (L.status === "running") {
-					controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
+					const mainUrl = (L.urls || []).find(u => u.link) || (L.urls && L.urls[0]);
+					const otherUrls = (L.urls || []).filter(u => u !== mainUrl);
+
+					controls = h("div", { style: "display: flex; flex-direction: column; gap: 12px; align-items: flex-end;" },
+						h("div", { style: "display: flex; align-items: center; gap: 12px;" },
+							h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running"),
+							h("span", { style: "font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-muted);", "data-expires": L.expiresAt, text: fmtLeft(L.expiresAt - Date.now()) })
+						),
+						mainUrl && mainUrl.link ? h("a", { class: "v0-start-btn", href: mainUrl.url, target: "_blank", style: "text-decoration: none; background: var(--accent); color: #000; border-color: var(--accent);" }, "Open " + mainUrl.name) : null,
+						h("div", { style: "display: flex; gap: 8px;" },
+							h("button", { type: "button", class: "v0-tab", text: "+1 hour", onclick: () => ctl.extend(lab.id, 1) }),
+							h("button", { type: "button", class: "v0-tab", style: "color: var(--danger); border-color: rgba(255, 92, 108, 0.3);", text: "Stop lab", onclick: () => ctl.stop(lab.id) })
+						),
+						otherUrls.length > 0 ? h("details", { style: "font-size: 0.8rem; color: var(--text-muted); cursor: pointer; text-align: right;" },
+							h("summary", { text: "Show all services (Dev Mode)" }),
+							h("div", { style: "display: flex; flex-direction: column; gap: 4px; margin-top: 8px;" },
+								otherUrls.map(u => u.link ? h("a", { href: u.url, target: "_blank", style: "color: var(--accent); text-decoration: none;" }, "→ " + u.name) : null)
+							)
+						) : null
+					);
 				} else {
 					controls = h("button", { type: "button", class: "v0-start-btn", text: "▶ Start lab", disabled: !ctl.ready(), onclick: () => ctl.start(lab.id) });
 				}
