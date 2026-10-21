@@ -159,11 +159,6 @@
 					msg.textContent = found.size === lab.flags_list.length ? "🎉 Mission Complete!" : "✅ Correct! Flag accepted.";
 					msg.className = "v0-msg success"; msg.style.opacity = "1";
 					input.value = "";
-					
-					// If complete, reload the page to unlock the next mission
-					if (found.size === lab.flags_list.length) {
-						setTimeout(() => window.location.reload(), 2000);
-					}
 				} else {
 					msg.textContent = "❌ Incorrect flag. Keep trying.";
 					msg.className = "v0-msg error"; msg.style.opacity = "1";
@@ -192,28 +187,14 @@
 		);
 	}
 
-	// Checks if the previous mission was fully completed
-	function isMissionUnlocked(labIndex, ch) {
-		if (labIndex === 0) return true; // Mission 1 always unlocked
-		const prevLab = ch.labs[labIndex - 1];
-		if (!prevLab.flags_list) return true; // If previous has no flags defined, assume unlocked
-		
-		const storageKey = "ff_flags_" + prevLab.id;
-		const found = JSON.parse(localStorage.getItem(storageKey) || "[]");
-		return found.length >= prevLab.flags_list.length;
-	}
-
 	function missionPanel(ch, ctl) {
 		const missionsContainer = h("div", { class: "v0-missions-list" });
 
 		ch.labs.forEach((lab, index) => {
 			const L = ctl.state.labs[lab.id];
-			const unlocked = isMissionUnlocked(index, ch);
 
 			let controls;
-			if (!unlocked) {
-				controls = h("div", { class: "v0-badge locked", style: "opacity: 0.5;" }, "🔒 Locked");
-			} else if (L.status === "starting") {
+			if (L.status === "starting") {
 				controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
 			} else if (L.status === "running") {
 				controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
@@ -222,7 +203,7 @@
 			}
 
 			const missionContainer = h("div", { class: "v0-mission-container" },
-				h("div", { class: "v0-mission-row", style: !unlocked ? "opacity: 0.5;" : "" },
+				h("div", { class: "v0-mission-row" },
 					h("div", { class: "v0-mission-num" }, String(index + 1).padStart(2, "0")),
 					h("div", { class: "v0-mission-info" },
 						h("h3", { text: lab.title }),
@@ -232,8 +213,8 @@
 				)
 			);
 
-			// If running and unlocked, append the flag box underneath the row
-			if (unlocked && L.status === "running" && lab.flags_list) {
+			// If running, append the flag box underneath the row
+			if (L.status === "running" && lab.flags_list) {
 				missionContainer.append(inlineFlagPanel(lab));
 			}
 
