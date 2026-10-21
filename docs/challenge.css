@@ -234,3 +234,20 @@
 	background: var(--danger-soft);
 	border-color: rgba(255, 92, 108, 0.5);
 }
+/* Append this to the bottom of challenge.css */
+
+/* Fix Button wrapping */
+.v0-start-btn {
+	white-space: nowrap;
+}
+
+/* Error Box under missions */
+.v0-alert-err {
+	margin-top: 12px;
+	padding: 12px 16px;
+	border-radius: 8px;
+	background: rgba(255, 92, 108, 0.1);
+	border: 1px solid rgba(255, 92, 108, 0.3);
+	color: var(--danger);
+	font-size: 0.9rem;
+}

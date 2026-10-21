@@ -209,49 +209,69 @@
 		return h("ol", { class: "checklist" }, items);
 	}
 
+	function errorBox(err) {
+		if (!err) return null;
+		return h("div", { class: "v0-alert-err", role: "alert" },
+			h("strong", { text: err.message }),
+			err.hint ? h("div", { style: "margin-top: 4px; color: var(--text-muted);", text: err.hint }) : null,
+			err.problems && err.problems.length ? h("ul", { style: "margin: 8px 0 0; padding-left: 20px;" }, err.problems.map((p) => h("li", { text: p }))) : null,
+			err.code ? h("div", { style: "font-family: var(--font-mono); font-size: 0.75rem; margin-top: 8px;", text: "Error code: " + err.code }) : null);
+	}
+
 	function missionPanel(ch, ctl) {
-		const missionsContainer = h("div", { class: "v0-missions-list" });
+		const container = h("section", { class: "v0-panel", id: "launch" });
+		
+		const render = () => {
+			clear(container);
+			
+			const missionsContainer = h("div", { class: "v0-missions-list" });
 
-		ch.labs.forEach((lab, index) => {
-			const L = ctl.state.labs[lab.id];
+			ch.labs.forEach((lab, index) => {
+				const L = ctl.state.labs[lab.id];
 
-			let controls;
-			if (L.status === "starting") {
-				controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
-			} else if (L.status === "running") {
-				controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
-			} else {
-				controls = h("button", { type: "button", class: "v0-start-btn", text: "▶ Start lab", disabled: !ctl.ready(), onclick: () => ctl.start(lab.id) });
-			}
+				let controls;
+				if (L.status === "starting") {
+					controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
+				} else if (L.status === "running") {
+					controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
+				} else {
+					controls = h("button", { type: "button", class: "v0-start-btn", text: "▶ Start lab", disabled: !ctl.ready(), onclick: () => ctl.start(lab.id) });
+				}
 
-			const missionContainer = h("div", { class: "v0-mission-container" },
-				h("div", { class: "v0-mission-row" },
-					h("div", { class: "v0-mission-num" }, String(index + 1).padStart(2, "0")),
-					h("div", { class: "v0-mission-info" },
-						h("h3", { text: lab.title }),
-						h("p", { text: lab.summary })
+				const missionContainer = h("div", { class: "v0-mission-container" },
+					h("div", { class: "v0-mission-row" },
+						h("div", { class: "v0-mission-num" }, String(index + 1).padStart(2, "0")),
+						h("div", { class: "v0-mission-info" },
+							h("h3", { text: lab.title }),
+							h("p", { text: lab.summary }),
+							errorBox(L.error)
+						),
+						controls
+					)
+				);
+
+				if (L.status === "running" && lab.flags_list) {
+					missionContainer.append(inlineFlagPanel(lab));
+				}
+
+				missionsContainer.append(missionContainer);
+			});
+			
+			container.append(
+				h("div", { class: "v0-panel-header", style: "display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;" },
+					h("div", {},
+						h("h2", { style: "font-size:1.4rem;" }, "Missions"),
+						h("span", { class: "v0-panel-sub" }, "Progress through the operation")
 					),
-					controls
+					h("span", { style: "font-family:var(--font-mono); color:var(--accent); font-size:0.9rem; margin-top:8px;" }, "01 / " + String(ch.labs.length).padStart(2, "0"))
 				)
 			);
+			container.append(missionsContainer);
+		};
 
-			if (L.status === "running" && lab.flags_list) {
-				missionContainer.append(inlineFlagPanel(lab));
-			}
-
-			missionsContainer.append(missionContainer);
-		});
-
-		return h("section", { class: "v0-panel", id: "launch" },
-			h("div", { class: "v0-panel-header", style: "display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;" },
-				h("div", {},
-					h("h2", { style: "font-size:1.4rem;" }, "Missions"),
-					h("span", { class: "v0-panel-sub" }, "Progress through the operation")
-				),
-				h("span", { style: "font-family:var(--font-mono); color:var(--accent); font-size:0.9rem; margin-top:8px;" }, "01 / " + String(ch.labs.length).padStart(2, "0"))
-			),
-			missionsContainer
-		);
+		ctl.onChange(render);
+		render();
+		return container;
 	}
 
 	function aboutPanel(ch) {
@@ -311,7 +331,6 @@
 					h("span", { class: "v0-panel-sub" }, "Intercept directly from your browser.")
 				),
 				h("div", { class: "v0-ext-buttons" },
-					// FIXED: Removed target="_blank" so Firefox allows the install prompt
 					h("a", { class: "v0-ext-btn", href: CFG.extension.firefox }, "🦊 Firefox")
 				)
 			),
