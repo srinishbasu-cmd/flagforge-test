@@ -192,12 +192,12 @@
 		const stat = (v) => (v === "ok" ? "ok" : v === "missing" || v === "bad" ? "bad" : v === "checking" ? "wait" : "idle");
 		const items = [];
 		items.push(check(stat(s.ext), "Browser extension",
-			s.ext === "ok" ? "Detected" : s.ext === "checking" ? "Checking…" : s.reload ? "The extension was reloaded. Reload this page." : "Not detected. Install it from the sidebar, then press Check again."));
+			s.ext === "ok" ? "Detected" : s.ext === "checking" ? "Checking…" : s.reload ? "Reload the page." : "Not detected. Install it below."));
 		items.push(check(stat(s.host), "Launcher app",
-			s.host === "ok" ? "Connected" + (s.launcherVersion ? " (v" + s.launcherVersion + ")" : "") : s.host === "checking" ? "Checking…" : s.host === "missing" ? "Not found. Download it from the sidebar and run its install command." : "Waiting for the extension.",
+			s.host === "ok" ? "Connected" + (s.launcherVersion ? " (v" + s.launcherVersion + ")" : "") : s.host === "checking" ? "Checking…" : s.host === "missing" ? "Not found. Download it below." : "Waiting for extension.",
 			s.host === "missing" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
 		items.push(check(stat(s.docker), "Docker",
-			s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting for the launcher.",
+			s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting.",
 			s.docker === "bad" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
 		return h("ol", { class: "checklist" }, items);
 	}
@@ -235,7 +235,6 @@
 				)
 			);
 
-			// If running, append the flag box underneath the row
 			if (L.status === "running" && lab.flags_list) {
 				missionContainer.append(inlineFlagPanel(lab));
 			}
@@ -277,17 +276,26 @@
 		return panel;
 	}
 
-	function asidePanels(ch, os) {
+	function asidePanels(ch, ctl, os) {
 		const osButtons = Object.keys(OS_LABEL).map((k) =>
 			h("button", { class: "v0-tab " + (k === os ? "active" : ""), onclick: () => {}, text: OS_LABEL[k] }));
 		
+		// Container for setup status that we can re-render
+		const setupContainer = h("div");
+		const renderSetup = () => {
+			clear(setupContainer);
+			setupContainer.append(setupList(ctl, os));
+		};
+		ctl.onChange(renderSetup);
+		renderSetup();
+
 		return [
 			h("section", { class: "v0-panel" },
 				h("div", { class: "v0-panel-header" },
 					h("h2", {}, "Setup Status "),
 					h("span", { class: "v0-panel-sub" }, "Check your environment.")
 				),
-				setupList(ch.ctl, os)
+				setupContainer
 			),
 			h("section", { class: "v0-panel" },
 				h("div", { class: "v0-panel-header" },
@@ -296,7 +304,8 @@
 				),
 				h("div", { class: "v0-tabs" }, osButtons),
 				terminalBox(os),
-				h("button", { class: "v0-download-btn" }, "⬇ Download for " + OS_LABEL[os])
+				// FIXED: Now uses an <a> tag to download the file
+				h("a", { class: "v0-download-btn", href: CFG.launcher.downloads[os] }, "⬇ Download for " + OS_LABEL[os])
 			),
 			h("section", { class: "v0-panel" },
 				h("div", { class: "v0-panel-header" },
@@ -304,7 +313,8 @@
 					h("span", { class: "v0-panel-sub" }, "Intercept directly from your browser.")
 				),
 				h("div", { class: "v0-ext-buttons" },
-					h("button", { class: "v0-ext-btn" }, "🦊 Firefox")
+					// FIXED: Now uses an <a> tag to download the .xpi file
+					h("a", { class: "v0-ext-btn", href: CFG.extension.firefox, target: "_blank" }, "🦊 Firefox")
 				)
 			),
 			h("div", { style: "text-align:center; margin-top:24px; font-size:0.9rem;" },
@@ -318,7 +328,6 @@
 		const live = ch.status === "live" && ch.labs.length > 0;
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
-		ch.ctl = ctl; // Attach ctl for use in asidePanels
 
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
@@ -327,7 +336,7 @@
 			readmePanel(ch)
 		);
 			
-		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, os) : null);
+		const aside = h("aside", { class: "side" }, live ? asidePanels(ch, ctl, os) : null);
 		const page = h("div", {}, hero(ch, os), h("div", { class: "layout" }, main, aside));
 		return { page, ctl };
 	}
