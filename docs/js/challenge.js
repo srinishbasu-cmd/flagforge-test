@@ -187,6 +187,13 @@
 		);
 	}
 
+	function check(status, title, detail, extra) {
+		const sym = { ok: "✓", bad: "!", wait: "…", idle: "·" }[status] || "·";
+		return h("li", { class: "check" },
+			h("span", { class: "dot " + status, "aria-hidden": "true", text: sym }),
+			h("div", {}, h("div", { class: "check-title", text: title }), detail ? h("div", { class: "hint", text: detail }) : null, extra || null));
+	}
+
 	function setupList(ctl, os) {
 		const s = ctl.state.setup;
 		const stat = (v) => (v === "ok" ? "ok" : v === "missing" || v === "bad" ? "bad" : v === "checking" ? "wait" : "idle");
@@ -200,13 +207,6 @@
 			s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting.",
 			s.docker === "bad" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
 		return h("ol", { class: "checklist" }, items);
-	}
-
-	function check(status, title, detail, extra) {
-		const sym = { ok: "✓", bad: "!", wait: "…", idle: "·" }[status] || "·";
-		return h("li", { class: "check" },
-			h("span", { class: "dot " + status, "aria-hidden": "true", text: sym }),
-			h("div", {}, h("div", { class: "check-title", text: title }), detail ? h("div", { class: "hint", text: detail }) : null, extra || null));
 	}
 
 	function missionPanel(ch, ctl) {
@@ -280,7 +280,6 @@
 		const osButtons = Object.keys(OS_LABEL).map((k) =>
 			h("button", { class: "v0-tab " + (k === os ? "active" : ""), onclick: () => {}, text: OS_LABEL[k] }));
 		
-		// Container for setup status that we can re-render
 		const setupContainer = h("div");
 		const renderSetup = () => {
 			clear(setupContainer);
@@ -304,7 +303,6 @@
 				),
 				h("div", { class: "v0-tabs" }, osButtons),
 				terminalBox(os),
-				// FIXED: Now uses an <a> tag to download the file
 				h("a", { class: "v0-download-btn", href: CFG.launcher.downloads[os] }, "⬇ Download for " + OS_LABEL[os])
 			),
 			h("section", { class: "v0-panel" },
@@ -313,8 +311,8 @@
 					h("span", { class: "v0-panel-sub" }, "Intercept directly from your browser.")
 				),
 				h("div", { class: "v0-ext-buttons" },
-					// FIXED: Now uses an <a> tag to download the .xpi file
-					h("a", { class: "v0-ext-btn", href: CFG.extension.firefox, target: "_blank" }, "🦊 Firefox")
+					// FIXED: Removed target="_blank" so Firefox allows the install prompt
+					h("a", { class: "v0-ext-btn", href: CFG.extension.firefox }, "🦊 Firefox")
 				)
 			),
 			h("div", { style: "text-align:center; margin-top:24px; font-size:0.9rem;" },
