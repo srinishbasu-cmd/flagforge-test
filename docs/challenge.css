@@ -193,3 +193,44 @@
 	color: var(--text-muted);
 	border-color: rgba(255, 255, 255, 0.1);
 }
+/* Setup Status Checklist */
+.checklist {
+	display: grid;
+	gap: 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+.check {
+	display: grid;
+	grid-template-columns: 28px 1fr;
+	gap: 16px;
+	align-items: start;
+}
+.check-title {
+	font-weight: 600;
+	color: var(--text);
+}
+.dot {
+	display: grid;
+	place-items: center;
+	width: 24px;
+	height: 24px;
+	margin-top: 2px;
+	font-family: var(--font-mono);
+	font-size: 0.8125rem;
+	border: 1px solid var(--border);
+	border-radius: 50%;
+	color: var(--text-muted);
+}
+.dot.ok {
+	color: #04130d;
+	background: var(--accent);
+	border-color: var(--accent);
+	box-shadow: 0 0 10px rgba(46,229,157,0.4);
+}
+.dot.bad {
+	color: var(--danger);
+	background: var(--danger-soft);
+	border-color: rgba(255, 92, 108, 0.5);
+}

@@ -187,6 +187,28 @@
 		);
 	}
 
+	function setupList(ctl, os) {
+		const s = ctl.state.setup;
+		const stat = (v) => (v === "ok" ? "ok" : v === "missing" || v === "bad" ? "bad" : v === "checking" ? "wait" : "idle");
+		const items = [];
+		items.push(check(stat(s.ext), "Browser extension",
+			s.ext === "ok" ? "Detected" : s.ext === "checking" ? "Checking…" : s.reload ? "The extension was reloaded. Reload this page." : "Not detected. Install it from the sidebar, then press Check again."));
+		items.push(check(stat(s.host), "Launcher app",
+			s.host === "ok" ? "Connected" + (s.launcherVersion ? " (v" + s.launcherVersion + ")" : "") : s.host === "checking" ? "Checking…" : s.host === "missing" ? "Not found. Download it from the sidebar and run its install command." : "Waiting for the extension.",
+			s.host === "missing" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
+		items.push(check(stat(s.docker), "Docker",
+			s.docker === "ok" ? "Ready" : s.docker === "checking" ? "Checking…" : s.docker === "bad" ? "Not ready." : "Waiting for the launcher.",
+			s.docker === "bad" && s.error ? h("div", { class: "hint", text: (s.error.message || "") + " " + (s.error.hint || "") }) : null));
+		return h("ol", { class: "checklist" }, items);
+	}
+
+	function check(status, title, detail, extra) {
+		const sym = { ok: "✓", bad: "!", wait: "…", idle: "·" }[status] || "·";
+		return h("li", { class: "check" },
+			h("span", { class: "dot " + status, "aria-hidden": "true", text: sym }),
+			h("div", {}, h("div", { class: "check-title", text: title }), detail ? h("div", { class: "hint", text: detail }) : null, extra || null));
+	}
+
 	function missionPanel(ch, ctl) {
 		const missionsContainer = h("div", { class: "v0-missions-list" });
 
@@ -262,6 +284,13 @@
 		return [
 			h("section", { class: "v0-panel" },
 				h("div", { class: "v0-panel-header" },
+					h("h2", {}, "Setup Status "),
+					h("span", { class: "v0-panel-sub" }, "Check your environment.")
+				),
+				setupList(ch.ctl, os)
+			),
+			h("section", { class: "v0-panel" },
+				h("div", { class: "v0-panel-header" },
 					h("h2", {}, "Get the launcher "),
 					h("span", { class: "v0-panel-sub" }, "Connect to the challenge environment.")
 				),
@@ -275,8 +304,7 @@
 					h("span", { class: "v0-panel-sub" }, "Intercept directly from your browser.")
 				),
 				h("div", { class: "v0-ext-buttons" },
-					h("button", { class: "v0-ext-btn" }, "🦊 Firefox"),
-					h("button", { class: "v0-ext-btn" }, "🌐 Chrome")
+					h("button", { class: "v0-ext-btn" }, "🦊 Firefox")
 				)
 			),
 			h("div", { style: "text-align:center; margin-top:24px; font-size:0.9rem;" },
@@ -290,7 +318,8 @@
 		const live = ch.status === "live" && ch.labs.length > 0;
 		let ctl = null;
 		if (live) ctl = ctlFactory(ch.labs.map((l) => l.id));
-		
+		ch.ctl = ctl; // Attach ctl for use in asidePanels
+
 		const main = h("div", { class: "main" },
 			briefingPanel(ch),
 			live ? missionPanel(ch, ctl) : null,
