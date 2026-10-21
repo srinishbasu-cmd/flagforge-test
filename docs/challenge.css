@@ -169,3 +169,27 @@
 	.v0-hero-right { flex-wrap: wrap; }
 	.v0-quick-stats { grid-template-columns: 1fr; }
 }
+/* Append this to the bottom of challenge.css */
+
+/* Mission List Container */
+.v0-missions-list {
+	display: flex;
+	flex-direction: column;
+}
+
+.v0-mission-container {
+	border-bottom: 1px solid rgba(255,255,255,0.05);
+	padding: 24px 0;
+}
+
+.v0-mission-container:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+/* Locked State */
+.v0-badge.locked {
+	background: rgba(255, 255, 255, 0.05);
+	color: var(--text-muted);
+	border-color: rgba(255, 255, 255, 0.1);
+}

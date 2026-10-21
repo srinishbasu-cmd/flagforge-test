@@ -50,7 +50,6 @@
 		return b;
 	}
 
-	// V0 Style Terminal Box
 	function terminalBox(os) {
 		const f = CFG.launcher.fileNames[os];
 		const cmd = os === "windows" ? `.\\${f} install` : `./${f} install`;
@@ -77,7 +76,6 @@
 
 	function hero(ch, os) {
 		const live = ch.status === "live";
-		const dl = CFG.launcher.downloads[os];
 		return h("header", { class: "v0-hero" },
 			h("div", { class: "v0-hero-left" },
 				h("p", { class: "v0-eyebrow" }, 
@@ -85,12 +83,12 @@
 					"ACTIVE CHALLENGE / 01"
 				),
 				h("h1", { class: "v0-title", html: ch.title.replace("-CTF", "<span>-CTF</span>") }),
-				h("p", { class: "v0-subtitle", text: "Intercept. Analyze. Exploit. A hands-on challenge for the curious minds who live between the request and the response." })
+				h("p", { class: "v0-subtitle", text: ch.tagline })
 			),
 			h("div", { class: "v0-hero-right" },
 				h("div", { class: "v0-badge" }, "🛡️ Difficulty: " + ch.difficulty),
 				h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Live"),
-				h("div", { class: "v0-badge" }, "📁 Missions: 6")
+				h("div", { class: "v0-badge" }, "📁 Missions: " + ch.labs.length)
 			)
 		);
 	}
@@ -98,7 +96,7 @@
 	function briefingPanel(ch) {
 		if (!ch.briefing) return null;
 		const b = ch.briefing;
-		const intro = h("div", { class: "v0-briefing-text", html: b.intro.join(" ") }); // Simplified for v0 look
+		const intro = h("div", { class: "v0-briefing-text" }, b.intro.map((p, i) => h("p", { text: p, style: i > 0 ? "margin-top: 12px;" : "" })));
 		const setup = h("ol", {}, (b.setup || []).map((s) => h("li", { text: s })));
 		const hints = h("ul", {}, (b.hints || []).map((hi) => h("li", {}, h("span", { class: "hint-badge", text: hi.unlocksAfter }), " " + hi.text)));
 
@@ -161,6 +159,11 @@
 					msg.textContent = found.size === lab.flags_list.length ? "🎉 Mission Complete!" : "✅ Correct! Flag accepted.";
 					msg.className = "v0-msg success"; msg.style.opacity = "1";
 					input.value = "";
+					
+					// If complete, reload the page to unlock the next mission
+					if (found.size === lab.flags_list.length) {
+						setTimeout(() => window.location.reload(), 2000);
+					}
 				} else {
 					msg.textContent = "❌ Incorrect flag. Keep trying.";
 					msg.className = "v0-msg error"; msg.style.opacity = "1";
@@ -189,36 +192,63 @@
 		);
 	}
 
-	function missionPanel(ch, ctl) {
-		const lab = ch.labs[0]; // For now just Mission 1
-		const L = ctl.state.labs[lab.id];
+	// Checks if the previous mission was fully completed
+	function isMissionUnlocked(labIndex, ch) {
+		if (labIndex === 0) return true; // Mission 1 always unlocked
+		const prevLab = ch.labs[labIndex - 1];
+		if (!prevLab.flags_list) return true; // If previous has no flags defined, assume unlocked
 		
-		let controls;
-		if (L.status === "starting") {
-			controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
-		} else if (L.status === "running") {
-			controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
-		} else {
-			controls = h("button", { type: "button", class: "v0-start-btn", text: "▶ Start lab", disabled: !ctl.ready(), onclick: () => ctl.start(lab.id) });
-		}
+		const storageKey = "ff_flags_" + prevLab.id;
+		const found = JSON.parse(localStorage.getItem(storageKey) || "[]");
+		return found.length >= prevLab.flags_list.length;
+	}
+
+	function missionPanel(ch, ctl) {
+		const missionsContainer = h("div", { class: "v0-missions-list" });
+
+		ch.labs.forEach((lab, index) => {
+			const L = ctl.state.labs[lab.id];
+			const unlocked = isMissionUnlocked(index, ch);
+
+			let controls;
+			if (!unlocked) {
+				controls = h("div", { class: "v0-badge locked", style: "opacity: 0.5;" }, "🔒 Locked");
+			} else if (L.status === "starting") {
+				controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot animate" }), "Starting...");
+			} else if (L.status === "running") {
+				controls = h("div", { class: "v0-badge live" }, h("span", { class: "live-dot" }), "Running");
+			} else {
+				controls = h("button", { type: "button", class: "v0-start-btn", text: "▶ Start lab", disabled: !ctl.ready(), onclick: () => ctl.start(lab.id) });
+			}
+
+			const missionContainer = h("div", { class: "v0-mission-container" },
+				h("div", { class: "v0-mission-row", style: !unlocked ? "opacity: 0.5;" : "" },
+					h("div", { class: "v0-mission-num" }, String(index + 1).padStart(2, "0")),
+					h("div", { class: "v0-mission-info" },
+						h("h3", { text: lab.title }),
+						h("p", { text: lab.summary })
+					),
+					controls
+				)
+			);
+
+			// If running and unlocked, append the flag box underneath the row
+			if (unlocked && L.status === "running" && lab.flags_list) {
+				missionContainer.append(inlineFlagPanel(lab));
+			}
+
+			missionsContainer.append(missionContainer);
+		});
 
 		return h("section", { class: "v0-panel", id: "launch" },
-			h("div", { class: "v0-panel-header", style: "display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px; margin-bottom:16px;" },
+			h("div", { class: "v0-panel-header", style: "display:flex; justify-content:space-between; align-items:flex-start; border-bottom:1px solid rgba(255,255,255,0.05); padding-bottom:16px;" },
 				h("div", {},
 					h("h2", { style: "font-size:1.4rem;" }, "Missions"),
 					h("span", { class: "v0-panel-sub" }, "Progress through the operation")
 				),
-				h("span", { style: "font-family:var(--font-mono); color:var(--accent); font-size:0.9rem; margin-top:8px;" }, "01 / 06")
+				h("span", { style: "font-family:var(--font-mono); color:var(--accent); font-size:0.9rem; margin-top:8px;" }, "01 / " + String(ch.labs.length).padStart(2, "0"))
 			),
-			h("div", { class: "v0-mission-row" },
-				h("div", { class: "v0-mission-num" }, "01"),
-				h("div", { class: "v0-mission-info" },
-					h("h3", { text: "Setup & Recon" }),
-					h("p", { text: "Find the first signal in the noise." })
-				),
-				controls
-			),
-			(L.status === "running" && lab.flags_list) ? inlineFlagPanel(lab) : null
+			missionsContainer
 		);
 	}
 
@@ -246,7 +276,7 @@
 
 	function asidePanels(ch, os) {
 		const osButtons = Object.keys(OS_LABEL).map((k) =>
-			h("button", { class: "v0-tab " + (k === os ? "active" : ""), onclick: () => {} , text: OS_LABEL[k] }));
+			h("button", { class: "v0-tab " + (k === os ? "active" : ""), onclick: () => {}, text: OS_LABEL[k] }));
 		
 		return [
 			h("section", { class: "v0-panel" },

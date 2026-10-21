@@ -52,11 +52,11 @@
 			<div class="about-stats">
 				<div class="stat-box">
 					<span class="stat-label">Live CTFs</span>
-					<span class="stat-value">1</span>
+					<span class="stat-value" id="stat-ctfs">-</span>
 				</div>
 				<div class="stat-box">
-					<span class="stat-label">Core tools</span>
-					<span class="stat-value">3</span>
+					<span class="stat-label">Total Missions</span>
+					<span class="stat-value" id="stat-missions">-</span>
 				</div>
 				<div class="stat-box">
 					<span class="stat-label">Lab access</span>
@@ -65,5 +65,24 @@
 			</div>
 		</div>
 	</section>
+
+	<script>
+		// Dynamically calculate stats from challenges.json
+		fetch('data/challenges.json')
+			.then(res => res.json())
+			.then(data => {
+				let liveCtfs = 0;
+				let totalMissions = 0;
+				
+				data.challenges.forEach(challenge => {
+					if (challenge.status === 'live') liveCtfs++;
+					if (challenge.labs) totalMissions += challenge.labs.length;
+				});
+
+				document.getElementById('stat-ctfs').textContent = liveCtfs;
+				document.getElementById('stat-missions').textContent = totalMissions;
+			})
+			.catch(err => console.error("Could not load stats", err));
+	</script>
 </body>
 </html>
